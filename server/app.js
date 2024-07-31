@@ -10,5 +10,5 @@ app.use(cors())
 
 app.use('/auth', userRouter)
 
-mongoose.connect("mongodb+srv://endale406:lMnxA6EljBRohJas@cluster0.rs44wxp.mongodb.net/recipes?retryWrites=true&w=majority&appName=Cluster0").then(console.log("connected successfull")).catch(err=>console.log(err))
+mongoose.connect("mongodb://localhost:27017/Recipes").then(console.log("connected successfull")).catch(err=>console.log(err))
 app.listen(5000, console.log("the server is running "))

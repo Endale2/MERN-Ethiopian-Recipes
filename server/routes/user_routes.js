@@ -6,24 +6,28 @@ import jwt from 'jsonwebtoken'
 
 const router = express.Router()
 
-
-router.post('/register', async(req,res)=>{
-    const {username, password} = req.body
-
-    const user = await UserModel.findOne({username})
-    if(user){
-        res.json({message:"This user is already exist"})
+router.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+  
+    try {
+      // Check if the user already exists
+      const user = await UserModel.findOne({ username });
+      if (user) {
+        return res.status(400).json({ message: "This user already exists" }); // Use status code 400 for client error
+      }
+  
+      // Create a new user
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new UserModel({ username, password: hashedPassword });
+      await newUser.save();
+  
+      res.status(201).json({ message: "User registered successfully" }); // Use status code 201 for successful creation
+    } catch (error) {
+      console.error(error); // Log the error for debugging
+      res.status(500).json({ message: "An error occurred during registration" }); // Use status code 500 for server error
     }
-
-   if (!user) {const hashedPassword = await bcrypt.hash(password, 10)
-     
-
-    const newUser = new UserModel({ username, password:hashedPassword})
-    await newUser.save()
-
-    res.json({message:"usser registered successfully"})}
-})
-
+  });
+  
 router.post("/login",  async(req,res)=>{
     const {username, password} = req.body
 
