@@ -18,6 +18,7 @@ function NavBar() {
     <div className="navbar">
       <Link to="/">Home</Link>
       <Link to="/create-recipes">Create Recipes</Link>
+      <Link to="/saved-recipes">Saved Recipes</Link>
       { !cookies.access_tokens?(
         <>
       <Link to="/Login">Login</Link>

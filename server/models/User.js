@@ -10,7 +10,10 @@ const UserSchema = mongoose.Schema({
     password:{
         type:String,
         requires: true,
-    }
+    },
+    savedRecipes:[{
+        type:mongoose.Types.ObjectId, ref:"recipes"
+    }]
 })
 
 
