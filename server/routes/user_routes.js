@@ -27,27 +27,34 @@ router.post('/register', async (req, res) => {
       res.status(500).json({ message: "An error occurred during registration" }); // Use status code 500 for server error
     }
   });
+
+
+
+
+  router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
   
-router.post("/login",  async(req,res)=>{
-    const {username, password} = req.body
-
-    const user = await UserModel.findOne({username})
-    if (!user){
-       return res.json({message:" The user is not exist"})
+    try {
+      const user = await UserModel.findOne({ username });
+      if (!user) {
+        return res.status(400).json({ message: "The user does not exist" });
+      }
+  
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "The password or username is incorrect" });
+      }
+  
+      if (isPasswordValid) {
+        const token = jwt.sign({ id: user._id }, "secret");
+        return res.status(200).json({ token, user, message: "The user logged in successfully" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "An error occurred during login" });
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid){
-       return res.json({message:" the password or username is incorrect"})
-    }
-
-    if (isPasswordValid){
-     const token = jwt.sign({id:user._id}, "secret");
-     return  res.json({token, user, message:"The user logged in successfully"})
-
-    }
-})
-
-
+  });
+  
 
 
 
