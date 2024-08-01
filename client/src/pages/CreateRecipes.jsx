@@ -11,19 +11,19 @@ function CreateRecipes() {
     instruction: "",
     imageURL: "",
     cookingTime: 0,
-    userOwner:userId
+    userOwner: userId
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-   try{ const response = await axios.post("http://localhost:5000/recipes", recipe)
-    console.log(response)
-    navigate("/")
-  }
-    catch(err){
-      console.log(err)
+    try {
+      const response = await axios.post("http://localhost:5000/recipes", recipe);
+      console.log(response);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -43,11 +43,11 @@ function CreateRecipes() {
   };
 
   return (
-    <div>
-      <h1>Create Recipes</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
+    <div className="min-h-screen bg-yellow-50 flex flex-col items-center py-10">
+      <h1 className="text-3xl font-extrabold text-orange-700 mb-8">Create Your Recipe</h1>
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mx-4 sm:mx-auto">
+        <div className="mb-6">
+          <label htmlFor="name" className="block text-gray-800 font-semibold mb-2">Recipe Name:</label>
           <input
             type="text"
             id="name"
@@ -55,34 +55,43 @@ function CreateRecipes() {
             value={recipe.name}
             onChange={handleChange}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
-        <div>
-          <label htmlFor="ingredients">Ingredients:</label>
+        <div className="mb-6">
+          <label htmlFor="ingredients" className="block text-gray-800 font-semibold mb-2">Ingredients:</label>
           {recipe.ingredients.map((ingredient, index) => (
-            <div key={index}>
+            <div key={index} className="flex mb-2">
               <input
                 type="text"
                 value={ingredient}
                 onChange={(e) => handleIngredientChange(index, e)}
                 required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
           ))}
-          <button type="button" onClick={addIngredient}>Add Ingredient</button>
+          <button
+            type="button"
+            onClick={addIngredient}
+            className="mt-2 text-blue-500 hover:text-blue-700 font-semibold"
+          >
+            Add Ingredient
+          </button>
         </div>
-        <div>
-          <label htmlFor="instruction">Instruction:</label>
+        <div className="mb-6">
+          <label htmlFor="instruction" className="block text-gray-800 font-semibold mb-2">Instructions:</label>
           <textarea
             id="instruction"
             name="instruction"
             value={recipe.instruction}
             onChange={handleChange}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           ></textarea>
         </div>
-        <div>
-          <label htmlFor="imageURL">Image URL:</label>
+        <div className="mb-6">
+          <label htmlFor="imageURL" className="block text-gray-800 font-semibold mb-2">Image URL:</label>
           <input
             type="text"
             id="imageURL"
@@ -90,10 +99,11 @@ function CreateRecipes() {
             value={recipe.imageURL}
             onChange={handleChange}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
-        <div>
-          <label htmlFor="cookingTime">Cooking Time (in minutes):</label>
+        <div className="mb-6">
+          <label htmlFor="cookingTime" className="block text-gray-800 font-semibold mb-2">Cooking Time (minutes):</label>
           <input
             type="number"
             id="cookingTime"
@@ -101,9 +111,15 @@ function CreateRecipes() {
             value={recipe.cookingTime}
             onChange={handleChange}
             required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
-        <button type="submit">Create Recipe</button>
+        <button
+          type="submit"
+          className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 font-semibold"
+        >
+          Create Recipe
+        </button>
       </form>
     </div>
   );

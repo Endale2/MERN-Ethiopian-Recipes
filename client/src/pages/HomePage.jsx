@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import getUserId from '../hooks/getUserId';
+import { FaClock, FaHeart } from 'react-icons/fa';
 
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
@@ -51,23 +52,28 @@ function HomePage() {
   };
 
   return (
-    <div>
-      <h1>HomePage</h1>
-      <ul>
+    <div className="min-h-screen bg-yellow-50 py-12 px-4">
+      <h1 className="text-4xl font-extrabold text-center text-orange-700 mb-12">Delicious Recipes</h1>
+      <ul className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {recipes.map((recipe) => (
-          <li key={recipe._id}>
-            <div>
-              <h1>{recipe.name}</h1>
+          <li key={recipe._id} className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105">
+            <img className="w-full h-40 object-cover" src={recipe.imageURL} alt={recipe.name} />
+            <div className="p-4">
+              <h2 className="text-xl font-semibold text-orange-800 mb-2">{recipe.name}</h2>
+              <p className="text-gray-600 mb-4 truncate">{recipe.instruction}</p>
+              <div className="flex items-center text-gray-500 mb-4">
+                <FaClock className="mr-2" /> {recipe.cookingTime} mins
+              </div>
+              {isRecipeSaved(recipe._id) ? (
+                <button className="w-full bg-yellow-300 text-gray-800 py-2 rounded-md flex items-center justify-center" disabled>
+                  <FaHeart className="text-red-600 mr-2" /> Saved
+                </button>
+              ) : (
+                <button className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 flex items-center justify-center" onClick={() => saveRecipe(recipe._id)}>
+                  <FaHeart className="mr-2" /> Save
+                </button>
+              )}
             </div>
-            <div className="instructions">{recipe.instruction}</div>
-            <img src={recipe.imageURL} alt={recipe.name} />
-            <p>{recipe.cookingTime} minutes</p>
-
-            {isRecipeSaved(recipe._id) ? (
-              <button disabled>Saved</button>
-            ) : (
-              <button onClick={() => saveRecipe(recipe._id)}>Save</button>
-            )}
           </li>
         ))}
       </ul>

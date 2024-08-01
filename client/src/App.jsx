@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
@@ -7,6 +7,9 @@ import CreateRecipes from "./pages/CreateRecipes";
 import NavBar from "./components/NavBar";
 import { Toaster } from 'react-hot-toast';
 import SavedRecipes from "./pages/SavedRecipes";
+import Footer from "./components/Footer";
+import './index.css';
+
 
 function App() {
   return (
@@ -21,6 +24,7 @@ function App() {
         <Route path="/create-recipes" element={<CreateRecipes />} />
         <Route path="/saved-recipes" element={<SavedRecipes />} />
       </Routes>
+      <Footer />
     </>
   );
 }
