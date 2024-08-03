@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import express from "express";
+import mongoose from 'mongoose';
 
 const RecipeSchema = mongoose.Schema({
   name: {
@@ -7,7 +6,6 @@ const RecipeSchema = mongoose.Schema({
     required: true,
   },
   ingredients: [{ type: String, required: true }],
-
   instruction: {
     type: String,
     required: true,
@@ -20,10 +18,10 @@ const RecipeSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  userOwner:{
-    type:mongoose.Types.ObjectId,
-    ref: "users",
-    required:true
+  userOwner: {
+    type: mongoose.Types.ObjectId,
+    ref: "users",  // Ensure this matches the model name
+    required: true
   }
 });
 
