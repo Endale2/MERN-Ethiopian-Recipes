@@ -14,7 +14,7 @@ function SavedRecipes() {
       try {
         const response = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
         setSavedRecipes(response.data.savedRecipes);
-        console.log(response.data.savedRecipes);
+        
       } catch (err) {
         console.log(err);
       }
