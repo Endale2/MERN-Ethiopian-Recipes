@@ -39,8 +39,6 @@ function HomePage() {
     try {
       const response = await axios.put("http://localhost:5000/recipes", { recipeId, userId });
       console.log(response);
-      alert("The recipe is saved");
-
       // Refresh saved recipes after saving a new one
       const savedResponse = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
       setSavedRecipes(savedResponse.data.savedRecipes);

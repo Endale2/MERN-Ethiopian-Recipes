@@ -1,17 +1,29 @@
-import express from "express"
-import mongoose from "mongoose"
-import { userRouter } from "./routes/user_routes.js"
-import { recipesRouter } from "./routes/recipes_router.js"
-import cors from 'cors'
+import express from "express";
+import mongoose from "mongoose";
+import { userRouter } from "./routes/user_routes.js";
+import { recipesRouter } from "./routes/recipes_router.js";
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 
+dotenv.config();
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+const app = express();
 
-app.use('/auth', userRouter)
-app.use('/recipes', recipesRouter)
+// Middleware
+app.use(express.json());
+app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/Recipes").then(console.log("connected successfull")).catch(err=>console.log(err))
-app.listen(5000, console.log("the server is running "))
+// Routes
+app.use('/auth', userRouter);
+app.use('/recipes', recipesRouter);
+
+
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to MongoDB successfully"))
+  .catch(err => console.log("MongoDB connection error:", err));
+
+
+app.listen(5000, () => {
+  console.log("The server is running on port 5000");
+});

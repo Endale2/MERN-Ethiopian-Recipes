@@ -10,21 +10,21 @@ router.post('/register', async (req, res) => {
     const { username, password } = req.body;
   
     try {
-      // Check if the user already exists
+     
       const user = await UserModel.findOne({ username });
       if (user) {
-        return res.status(400).json({ message: "This user already exists" }); // Use status code 400 for client error
+        return res.status(400).json({ message: "This user already exists" }); 
       }
   
-      // Create a new user
+      
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new UserModel({ username, password: hashedPassword });
       await newUser.save();
   
-      res.status(201).json({ message: "User registered successfully" }); // Use status code 201 for successful creation
+      res.status(201).json({ message: "User registered successfully" }); 
     } catch (error) {
-      console.error(error); // Log the error for debugging
-      res.status(500).json({ message: "An error occurred during registration" }); // Use status code 500 for server error
+      
+      res.status(500).json({ message: "An error occurred during registration" }); 
     }
   });
 
