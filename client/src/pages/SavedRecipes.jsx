@@ -12,7 +12,7 @@ function SavedRecipes() {
   useEffect(() => {
     const fetchSavedRecipes = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
+        const response = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/saved-recipes/${userId}`);
         setSavedRecipes(response.data.savedRecipes);
         
       } catch (err) {

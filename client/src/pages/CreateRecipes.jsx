@@ -20,7 +20,7 @@ function CreateRecipes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/recipes", recipe);
+      const response = await axios.post("https://mern-ethiopian-recipes.onrender.com/recipes", recipe);
       console.log(response);
       navigate("/");
     } catch (err) {

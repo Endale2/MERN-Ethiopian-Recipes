@@ -11,7 +11,7 @@ function RecipeDetail() {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/recipes/${id}/`);
+        const response = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/${id}/`);
         if (response.data) {
           setRecipe(response.data);
         } else {

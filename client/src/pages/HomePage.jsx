@@ -13,7 +13,7 @@ function HomePage() {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/recipes");
+        const response = await axios.get("https://mern-ethiopian-recipes.onrender.com//recipes");
         setRecipes(response.data);
         console.log(response.data);
       } catch (err) {
@@ -23,7 +23,7 @@ function HomePage() {
 
     const fetchSavedRecipes = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
+        const response = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/saved-recipes/${userId}`);
         setSavedRecipes(response.data.savedRecipes);
         console.log(response.data.savedRecipes);
       } catch (err) {
@@ -37,10 +37,10 @@ function HomePage() {
 
   const saveRecipe = async (recipeId) => {
     try {
-      const response = await axios.put("http://localhost:5000/recipes", { recipeId, userId });
+      const response = await axios.put("https://mern-ethiopian-recipes.onrender.com/recipes", { recipeId, userId });
       console.log(response);
       // Refresh saved recipes after saving a new one
-      const savedResponse = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
+      const savedResponse = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/saved-recipes/${userId}`);
       setSavedRecipes(savedResponse.data.savedRecipes);
     } catch (err) {
       console.log(err);
