@@ -20,7 +20,7 @@ function CreateRecipes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://mern-ethiopian-recipes.onrender.com/recipes", recipe);
+      const response = await axios.post("http://localhost:5000/recipes", recipe);
       console.log(response);
       navigate("/");
     } catch (err) {
@@ -65,6 +65,21 @@ function CreateRecipes() {
           />
         </div>
         <div className="mb-6">
+          <label htmlFor="name" className="block text-gray-800 font-semibold mb-2 flex items-center">
+            <FaList className="text-gray-600 mr-2" />
+            Recipe Describtion:
+          </label>
+          <input
+            type="text"
+            id="describtion"
+            name="describtion"
+            value={recipe.describtion}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+        <div className="mb-6">
           <label htmlFor="ingredients" className="block text-gray-800 font-semibold mb-2 flex items-center">
             <FaList className="text-gray-600 mr-2" />
             Ingredients:
@@ -83,7 +98,7 @@ function CreateRecipes() {
           <button
             type="button"
             onClick={addIngredient}
-            className="flex items-center mt-2 text-blue-500 hover:text-blue-700 font-semibold"
+            className="flex items-center mt-2 text-orange-500 hover:text-orange-700 font-semibold"
           >
             <FaPlus className="mr-1" /> Add Ingredient
           </button>

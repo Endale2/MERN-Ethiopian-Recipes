@@ -38,12 +38,19 @@ function NavBar() {
             <Link className={getLinkClassName("/")} to="/">
               <FaHome className="mr-1" /> Home
             </Link>
+            {cookies.access_tokens ? (<>
             <Link className={getLinkClassName("/create-recipes")} to="/create-recipes">
               <FaUtensils className="mr-1" /> Create Recipes
             </Link>
             <Link className={getLinkClassName("/saved-recipes")} to="/saved-recipes">
               <FaBookmark className="mr-1" /> Saved Recipes
             </Link>
+            </>
+            ):
+            (
+              <p></p>
+            )
+            }
           </div>
         </div>
         <div className="hidden md:flex items-center space-x-6">
@@ -71,12 +78,8 @@ function NavBar() {
           <Link className={getLinkClassName("/")} to="/" onClick={handleMenuToggle}>
             <FaHome className="mr-1" /> Home
           </Link>
-          <Link className={getLinkClassName("/create-recipes")} to="/create-recipes" onClick={handleMenuToggle}>
-            <FaUtensils className="mr-1" /> Create Recipes
-          </Link>
-          <Link className={getLinkClassName("/saved-recipes")} to="/saved-recipes" onClick={handleMenuToggle}>
-            <FaBookmark className="mr-1" /> Saved Recipes
-          </Link>
+          
+         
           {!cookies.access_tokens ? (
             <>
               <Link className={getLinkClassName("/login")} to="/login" onClick={handleMenuToggle}>
@@ -86,11 +89,17 @@ function NavBar() {
                 <FaUserPlus className="mr-1" /> Register
               </Link>
             </>
-          ) : (
+          ) : (<>
+            <Link className={getLinkClassName("/create-recipes")} to="/create-recipes" onClick={handleMenuToggle}>
+            <FaUtensils className="mr-1" /> Create Recipes
+          </Link>
+          <Link className={getLinkClassName("/saved-recipes")} to="/saved-recipes" onClick={handleMenuToggle}>
+            <FaBookmark className="mr-1" /> Saved Recipes
+          </Link>
             <button className="flex items-center text-orange-800 hover:text-orange-600 transition-colors duration-300" onClick={() => { logout(); handleMenuToggle(); }}>
               <FaSignOutAlt className="mr-1" /> Logout
             </button>
-          )}
+            </>)}
         </div>
       </div>
     </nav>

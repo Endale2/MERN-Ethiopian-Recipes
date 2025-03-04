@@ -5,6 +5,10 @@ const RecipeSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  describtion: {
+    type: String,
+    required: true,
+  },
   ingredients: [{ type: String, required: true }],
   instruction: {
     type: String,
@@ -20,7 +24,7 @@ const RecipeSchema = mongoose.Schema({
   },
   userOwner: {
     type: mongoose.Types.ObjectId,
-    ref: "users",  // Ensure this matches the model name
+    ref: "users",  
     required: true
   }
 });

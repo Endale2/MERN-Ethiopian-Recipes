@@ -13,7 +13,7 @@ function HomePage() {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await axios.get("https://mern-ethiopian-recipes.onrender.com//recipes");
+        const response = await axios.get("http://localhost:5000/recipes");
         setRecipes(response.data);
         console.log(response.data);
       } catch (err) {
@@ -23,7 +23,7 @@ function HomePage() {
 
     const fetchSavedRecipes = async () => {
       try {
-        const response = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/saved-recipes/${userId}`);
+        const response = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
         setSavedRecipes(response.data.savedRecipes);
         console.log(response.data.savedRecipes);
       } catch (err) {
@@ -37,10 +37,10 @@ function HomePage() {
 
   const saveRecipe = async (recipeId) => {
     try {
-      const response = await axios.put("https://mern-ethiopian-recipes.onrender.com/recipes", { recipeId, userId });
+      const response = await axios.put("http://localhost:5000/recipes", { recipeId, userId });
       console.log(response);
       // Refresh saved recipes after saving a new one
-      const savedResponse = await axios.get(`https://mern-ethiopian-recipes.onrender.com/recipes/saved-recipes/${userId}`);
+      const savedResponse = await axios.get(`http://localhost:5000/recipes/saved-recipes/${userId}`);
       setSavedRecipes(savedResponse.data.savedRecipes);
     } catch (err) {
       console.log(err);
@@ -68,7 +68,7 @@ function HomePage() {
             <img className="w-full h-40 object-cover" src={recipe.imageURL} alt={recipe.name} />
             <div className="p-4">
               <h2 className="text-xl font-semibold text-orange-800 mb-2">{recipe.name}</h2>
-              <p className="text-gray-600 mb-4 truncate">{recipe.instruction}</p>
+              <p className="text-gray-600 mb-4 truncate">{recipe.describtion}</p>
               <div className="flex items-center text-gray-500 mb-4">
                 <FaClock className="mr-2" /> {recipe.cookingTime} mins
               </div>

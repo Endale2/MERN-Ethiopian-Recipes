@@ -9,7 +9,7 @@ function Register() {
   const onSubmit = async (e) => {
     e.preventDefault(); // Correctly prevent default behavior
     try {
-      const response = await axios.post("https://mern-ethiopian-recipes.onrender.com/auth/register", { username, password });
+      const response = await axios.post("http://localhost:5000/auth/register", { username, password });
       
       // Check if the response contains an error message
       if (response.data.message_exist) {
@@ -50,7 +50,7 @@ function Register() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700"
+          className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-700"
         >
           Register
         </button>

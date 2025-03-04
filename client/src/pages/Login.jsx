@@ -13,7 +13,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://mern-ethiopian-recipes.onrender.com/auth/login", { username, password });
+      const response = await axios.post("http://localhost:5000/auth/login", { username, password });
 
       setCookies("access_tokens", response.data.token);
       window.localStorage.setItem("userId", response.data.user._id);
@@ -53,7 +53,7 @@ function Login() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700"
+          className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-700"
         >
           Login
         </button>
