@@ -1,9 +1,9 @@
 // src/pages/HomePage.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import api from '../axiosConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { FaClock, FaHeart, FaSpinner } from 'react-icons/fa';
+import { FaClock, FaHeart, FaSpinner, FaGoogle, FaPlusCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 export default function HomePage() {
@@ -11,7 +11,7 @@ export default function HomePage() {
   const [saved, setSaved] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savingIds, setSavingIds] = useState([]); // which cards are (un)saving
+  const [savingIds, setSavingIds] = useState([]); 
   const navigate = useNavigate();
   const { user, login } = useContext(AuthContext);
 
@@ -19,23 +19,20 @@ export default function HomePage() {
     const fetchRecipes = async () => {
       setIsLoading(true);
       setError('');
-
       try {
         const recipesRes = await api.get('/recipes');
-        setRecipes(recipesRes.data);
-
+        setRecipes(recipesRes.data.reverse());          // newest first
         if (user) {
           const savedRes = await api.get('/recipes/saved');
           setSaved(savedRes.data.savedRecipes);
         }
       } catch (err) {
         console.error(err);
-        setError('😔 Oops! Could not load recipes. Please try again later.');
+        setError('😔 Could not load recipes. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchRecipes();
   }, [user]);
 
@@ -44,113 +41,133 @@ export default function HomePage() {
   const toggleSave = async (id) => {
     if (!user) {
       toast.info(
-        '🙏 We appreciate your interest! Please continue with Google to unlock saving your favorite recipes.',
-        {
-          icon: <FaHeart className="text-red-500" />,
-          autoClose: 4000
-        }
+        '🙏 We appreciate you! Please sign in with Google to save recipes.',
+        { icon: <FaGoogle className="text-blue-500" />, autoClose: 4000 }
       );
-      login();
-      return;
+      return login();
     }
-
-    setSavingIds(ids => [...ids, id]);
+    setSavingIds(s => [...s, id]);
     try {
       if (!isSaved(id)) {
         await api.put('/recipes/save', { recipeId: id });
-        toast.success(
-          '✅ Added to your collection! Keep cooking up a storm.',
-          {
-            icon: <FaHeart className="text-white" />,
-            autoClose: 3000
-          }
-        );
+        toast.success('✅ Recipe saved!', { autoClose: 2000 });
       } else {
         await api.delete(`/recipes/saved/${id}`);
-        toast.success(
-          '🗑️ Removed from your saved recipes.',
-          { autoClose: 3000 }
-        );
+        toast.success('🗑️ Recipe removed.', { autoClose: 2000 });
       }
       const { data } = await api.get('/recipes/saved');
       setSaved(data.savedRecipes);
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error('😕 Something went wrong. Please try again.', { autoClose: 3000 });
     } finally {
-      setSavingIds(ids => ids.filter(x => x !== id));
+      setSavingIds(s => s.filter(x => x !== id));
     }
   };
 
   if (error) {
     return (
-      <div className="text-red-500 p-8 text-center text-xl">
-        {error}
+      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-yellow-50 p-8">
+        <p className="text-red-600 text-2xl mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+        >
+          Retry
+        </button>
       </div>
     );
   }
-
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-yellow-50 to-orange-50">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-b from-yellow-50 to-orange-50">
         <FaSpinner className="animate-spin text-4xl text-orange-500 mb-4" />
-        <p className="text-orange-700 text-xl">
-          🍲 Whisking up delicious recipes… please wait!
-        </p>
+        <p className="text-orange-700 text-xl">🍲 Loading recipes…</p>
       </div>
     );
   }
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Decorative utensil icons in the background */}
-      <div className="pointer-events-none absolute inset-0 opacity-5 bg-[url('/pattern-utensils.svg')] bg-repeat"></div>
+    <div className="relative bg-gradient-to-br from-yellow-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Hero */}
+      <section className="relative text-center py-12 md:py-16 lg:py-20 bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl shadow-xl mb-16 transform hover:scale-[1.01] transition">
+        <div className="absolute inset-0 opacity-10 bg-[url('/pattern-utensils-white.svg')] bg-repeat"></div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4">
+            Discover & Share Ethiopian Flavors
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-orange-100 mb-8">
+            Dive into a world of rich spices and vibrant dishes—your next favorite meal awaits!
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            {!user ? (
+              <button
+                onClick={login}
+                className="inline-flex items-center space-x-2 bg-white text-orange-600 px-6 py-3 rounded-full font-semibold shadow-md hover:bg-gray-100 transition"
+              >
+                <FaGoogle /> <span>Continue with Google</span>
+              </button>
+            ) : (
+              <Link
+                to="/create-recipes"
+                className="inline-flex items-center space-x-2 bg-white text-green-600 px-6 py-3 rounded-full font-semibold shadow-md hover:bg-gray-100 transition"
+              >
+                <FaPlusCircle /> <span>Add Your Recipe</span>
+              </Link>
+            )}
+            <Link
+              to={user ? '/saved-recipes' : '#'}
+              onClick={() => !user && toast.info('Please sign in to view saved recipes', { autoClose: 3000 })}
+              className="inline-flex items-center space-x-2 border-2 border-white text-white px-6 py-3 rounded-full font-semibold shadow-md hover:bg-white hover:text-orange-600 transition"
+            >
+              <FaHeart /> <span>Saved Recipes</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      <h1 className="relative text-5xl font-extrabold text-center text-orange-800 mb-16 animate-fade-in-down">
-        Savor the Flavors of Ethiopia
-      </h1>
+      {/* Grid Title */}
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-orange-800 mb-8">
+        Latest Community Creations
+      </h2>
 
-      <ul className="relative grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* Cards */}
+      <ul className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {recipes.map((r, i) => (
           <li
             key={r._id}
             onClick={() => navigate(`/recipes/${r._id}`)}
-            className={`relative bg-white rounded-xl shadow-xl overflow-hidden transform transition-all duration-300 
-                        hover:scale-103 hover:shadow-2xl cursor-pointer group animate-fade-in-up delay-${i * 100}`}
+            className={`bg-white rounded-xl shadow-lg overflow-hidden transform transition hover:scale-105 cursor-pointer animate-fade-in-up`}
+            style={{ animationDelay: `${i * 100}ms` }}
           >
-            <div className="w-full h-48 overflow-hidden">
+            <div className="h-44 overflow-hidden">
               <img
                 src={r.imageURL}
                 alt={r.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
+                className="w-full h-full object-cover transition-transform group-hover:scale-110"
               />
             </div>
-            <div className="p-5">
-              <h2 className="text-2xl font-bold text-orange-800 mb-2 truncate group-hover:text-orange-700 transition-colors duration-300">
-                {r.name}
-              </h2>
-              <p className="text-gray-700 text-sm mb-4 line-clamp-3">
-                {r.description}
-              </p>
-              <div className="flex items-center text-gray-500 text-sm mb-4">
-                <FaClock className="mr-2 text-orange-500" />
-                <span className="font-medium">{r.cookingTime} mins</span>
+            <div className="p-4 flex flex-col h-[inherit] justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-orange-700 mb-1 truncate">{r.name}</h3>
+                <p className="text-gray-600 text-sm line-clamp-2 mb-3">{r.description}</p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <FaClock className="mr-1 text-orange-500" /> {r.cookingTime} mins
+                </div>
               </div>
               <button
                 onClick={e => { e.stopPropagation(); toggleSave(r._id); }}
                 disabled={savingIds.includes(r._id)}
-                className={`w-full py-3 rounded-lg flex items-center justify-center text-lg font-semibold transition-all duration-300
+                className={`mt-4 w-full py-2 rounded-lg flex items-center justify-center font-semibold transition
                   ${isSaved(r._id)
                     ? 'bg-yellow-300 text-gray-800 border border-yellow-400'
-                    : 'bg-orange-600 text-white hover:bg-orange-700 shadow-md hover:shadow-lg'
+                    : 'bg-orange-600 text-white hover:bg-orange-700'
                   } ${savingIds.includes(r._id) ? 'cursor-wait' : ''}`}
               >
-                {savingIds.includes(r._id) ? (
-                  <FaSpinner className="animate-spin mr-2" />
-                ) : (
-                  <FaHeart className={`mr-2 ${isSaved(r._id) ? 'text-red-600' : 'text-white'}`} />
-                )}
-                {isSaved(r._id) ? 'Saved' : 'Save Recipe'}
+                {savingIds.includes(r._id)
+                  ? <FaSpinner className="animate-spin mr-2" />
+                  : <FaHeart className={`mr-2 ${isSaved(r._id) ? 'text-red-600' : 'text-white'}`} />
+                }
+                {isSaved(r._id) ? 'Saved' : 'Save'}
               </button>
             </div>
           </li>
