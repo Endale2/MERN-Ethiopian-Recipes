@@ -30,12 +30,9 @@ export function AuthProvider({ children }) {
   // This assumes your backend has an endpoint like /auth/google
   // that handles the OAuth redirection.
   const login = () => {
-   
-    const backendAuthUrl = `https://mern-ethiopian-recipes.onrender.com/auth/google`;
-window.location.href = backendAuthUrl;
+  window.location.href = 'https://mern-ethiopian-recipes.onrender.com/auth/google';
+};
 
-   
-  };
 
   const logout = () => {
     api.get('/auth/logout')
