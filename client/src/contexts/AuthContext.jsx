@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
   const login = () => {
    
     const backendAuthUrl = `https://mern-ethiopian-recipes.onrender.com/auth/google`;
-    console.log("Redirecting to backend for Google login:", backendAuthUrl);
-    window.location.href = backendAuthUrl;
+window.location.href = backendAuthUrl;
+
    
   };
 
