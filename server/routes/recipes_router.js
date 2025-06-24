@@ -1,7 +1,9 @@
 import express from 'express';
 import RecipeModel from '../models/Recipe.js';
 import { upload } from '../config/mutler.js';
-import supabase from '../config/supabaseClient.js';
+
+import supabase from '../config/supabaseAdmin.js';
+
 
 export const recipesRouter = express.Router();
 
@@ -24,7 +26,7 @@ recipesRouter.post(
 
       // 1) Build a unique path in your bucket
       const fileExt = req.file.originalname.split('.').pop();
-      const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}.${fileExt}`;
+      const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`;
       const filePath = `recipes/${fileName}`;
 
       // 2) Upload buffer to Supabase Storage
@@ -42,7 +44,7 @@ recipesRouter.post(
       }
 
       // 3) Generate a public URL
-      const { publicURL, error: urlError } = supabase
+      const { data, error: urlError } = await supabase
         .storage
         .from('recipes')
         .getPublicUrl(filePath);
@@ -51,6 +53,7 @@ recipesRouter.post(
         console.error('Supabase URL error:', urlError);
         return res.status(500).json({ message: 'Could not get image URL.' });
       }
+      const publicURL = data.publicUrl;
 
       // 4) Save recipe with Supabase URL
       const recipeData = {
@@ -69,6 +72,8 @@ recipesRouter.post(
     }
   }
 );
+
+// ... the rest of your routes remain unchanged ...
 
 
 // Save recipe
