@@ -7,9 +7,9 @@ import {
   FaBars,
   FaTimes,
   FaUserCircle,
-  FaSpinner // Import FaSpinner for the loading indicator
+  FaSpinner
 } from 'react-icons/fa';
-import { AiOutlineGoogle } from 'react-icons/ai'; // Google icon
+import { AiOutlineGoogle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.jsx';
 
@@ -33,212 +33,117 @@ export default function NavBar() {
       : [])
   ];
 
-  // Close dropdown/mobile menu when clicking outside
   useEffect(() => {
     const onClickOutside = (e) => {
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
       if (menuRef.current && !menuRef.current.contains(e.target) && menuOpen) {
-          setMenuOpen(false);
+        setMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
-  }, [menuOpen]); // Depend on menuOpen to re-attach listener if menu state changes
+  }, [menuOpen]);
 
-  // Handle scroll effect for sticky header
   useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-      setScrolled(isScrolled); // Directly set the state based on comparison
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Removed `if (loading) return null;` to allow the navbar to always render,
-  // showing the loading indicator within it.
+  }, []);
 
   const handleLoginClick = () => {
-    console.log("Login button clicked in NavBar. Attempting to call AuthContext's login function.");
-    login(); // Call the login function from AuthContext
-    setMenuOpen(false); // Close mobile menu if open when initiating login
+    login();
+    setMenuOpen(false);
   };
 
   return (
-    <header className={`sticky top-0 z-50 font-inter transition-all duration-300
-      ${scrolled ? 'bg-white bg-opacity-90 shadow-lg backdrop-blur-sm' : 'bg-white shadow-md'}`}>
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between animate-fade-in-down">
-        {/* Logo and Site Title */}
-        <Link to="/" className="flex items-center space-x-3 group">
-          <FaUtensils size={32} className="text-orange-600 group-hover:text-orange-700 hover:rotate-6 transition-transform duration-300 animate-flicker" />
-          <span className="text-3xl font-extrabold tracking-tight font-playfair-display text-gray-900 group-hover:text-orange-700 transition-colors duration-300">
-            Ethiopian Cuisine
-          </span>
+    <header className={`sticky top-0 z-50 bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 transition-shadow ${scrolled ? 'shadow-lg' : 'shadow'} py-4`}>      
+      <div className="container mx-auto px-6 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <FaUtensils size={28} className="text-orange-500" />
+          <span className="text-2xl font-bold text-orange-600">Ethiopian Cuisine</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex space-x-8">
+        {/* Desktop Links */}
+        <nav className="hidden md:flex space-x-6">
           {links.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
-              className={`flex items-center space-x-2 text-lg font-medium relative group px-2 py-1 rounded-md
-                ${
-                  location.pathname === to
-                    ? 'text-orange-700 font-semibold'
-                    : 'text-gray-700 hover:text-orange-600'
-                } transition-all duration-300 ease-in-out hover:bg-yellow-50`}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+                location.pathname === to
+                  ? 'bg-orange-200 text-orange-700'
+                  : 'text-gray-700 hover:bg-yellow-200 hover:text-orange-600'
+              } transition`}
             >
-              <Icon className="text-xl group-hover:scale-110 transition-transform duration-200" />
+              <Icon />
               <span>{label}</span>
-              {/* Smooth animation indicator for active nav link */}
-              {location.pathname === to && (
-                <span className="absolute -bottom-1 left-0 w-full h-[3px] bg-orange-500 rounded-full animate-active-underline"></span>
-              )}
             </Link>
           ))}
         </nav>
 
-        {/* Authentication/User Section & Mobile Toggle */}
-        <div className="flex items-center space-x-6">
-          {loading ? ( // Display loading indicator when authentication is in progress
-            <div className="flex items-center text-orange-600 animate-pulse transition-all duration-300">
-              <FaSpinner className="animate-spin text-2xl mr-3" />
-              <span className="text-lg font-medium hidden sm:block">Authenticating...</span>
+        {/* Auth & Mobile Toggle */}
+        <div className="flex items-center space-x-4">
+          {loading ? (
+            <div className="flex items-center space-x-2 text-orange-500">
+              <FaSpinner className="animate-spin" />
             </div>
           ) : user ? (
-            // User Avatar and Dropdown
-            <div ref={avatarRef} className="relative">
+            <div className="relative" ref={avatarRef}>
               <img
-                src={
-                  user.photoURL ||
-                  `https://placehold.co/50x50/cccccc/333333?text=${
-                    user.email ? user.email[0].toUpperCase() : 'U'
-                  }`
-                }
+                src={user.photoURL || ''}
                 alt="avatar"
-                className="w-12 h-12 rounded-full cursor-pointer border-3 border-orange-400 object-cover
-                           transition-all duration-300 hover:border-orange-600 hover:shadow-lg hover:scale-105"
-                onClick={() => setDropdownOpen((o) => !o)}
+                className="w-10 h-10 rounded-full border-2 border-orange-400 cursor-pointer"
+                onClick={() => setDropdownOpen(o => !o)}
               />
-              {/* Dropdown Menu for Logged-in User */}
-              <div
-                className={`absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-20 origin-top-right transform transition-all duration-300 ease-out
-                  ${dropdownOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
-              >
-                <ul>
-                  <li className="px-5 py-3 text-lg font-medium text-gray-800 border-b border-gray-100">
-                    Hello, <span className="text-orange-700 font-semibold">{user.displayName || user.email?.split('@')[0] || 'User'}</span>
-                  </li>
-                  <li>
-                    <Link
-                      to="/profile"
-                      onClick={() => { setDropdownOpen(false); setMenuOpen(false); }}
-                      className="flex items-center px-5 py-3 hover:bg-orange-50 hover:text-orange-700 cursor-pointer text-gray-800 transition-all duration-200"
-                    >
-                      <FaUserCircle className="mr-3 text-xl" /> Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      className="w-full text-left flex items-center px-5 py-3 hover:bg-red-50 hover:text-red-700 cursor-pointer text-red-600 transition-all duration-200"
-                      onClick={() => {
-                        logout();
-                        setDropdownOpen(false);
-                        setMenuOpen(false);
-                      }}
-                    >
-                      <FaSignOutAlt className="mr-3 text-xl" /> Logout
-                    </button>
-                  </li>
-                </ul>
+              <div className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg transform transition ${dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`} ref={menuRef}>
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+                <button onClick={logout} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Logout</button>
               </div>
             </div>
           ) : (
-            // "Continue with Google" Button
             <button
               onClick={handleLoginClick}
-              className="flex items-center space-x-3 bg-amber-600 text-white px-7 py-3 rounded-full font-semibold shadow-lg
-                          hover:bg-amber-700 transition-all duration-300 hover:scale-105 transform
-                          focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 group"
+              className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
             >
-              <AiOutlineGoogle className="text-2xl group-hover:rotate-6 transition-transform duration-300" />
-              <span className="hidden sm:block">Continue with Google</span> {/* Hide text on small screens */}
-              <span className="sm:hidden">Google</span> {/* Show "Google" only on small screens */}
+              <AiOutlineGoogle />
+              <span>Sign in</span>
             </button>
           )}
 
-          {/* Mobile Menu Toggle Button */}
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            className="md:hidden text-gray-700 hover:text-orange-600 transition-colors duration-200"
-          >
-            {menuOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
+          <button className="md:hidden" onClick={() => setMenuOpen(o => !o)}>
+            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Menu */}
       {menuOpen && (
-        <nav ref={menuRef} className="md:hidden bg-white border-t border-gray-200 shadow-lg animate-slide-down origin-top">
-          <ul className="flex flex-col py-3">
+        <div className="md:hidden bg-white border-t">
+          <nav className="flex flex-col p-4 space-y-2" ref={menuRef}>
             {links.map(({ to, label, icon: Icon }) => (
-              <li key={to}>
-                <Link
-                  to={to}
-                  onClick={() => setMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-6 py-3 text-lg font-medium transition-all duration-200
-                    ${
-                      location.pathname === to
-                        ? 'bg-orange-50 text-orange-700 font-semibold'
-                        : 'text-gray-800 hover:bg-yellow-50'
-                    }`}
-                >
-                  <Icon className="text-xl" />
-                  <span>{label}</span>
-                </Link>
-              </li>
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-yellow-100"
+              >
+                <Icon />
+                <span>{label}</span>
+              </Link>
             ))}
-            {user ? (
-              <>
-                <li>
-                  <Link
-                    to="/profile"
-                    onClick={() => { setMenuOpen(false); setDropdownOpen(false); }}
-                    className="flex items-center space-x-3 px-6 py-3 text-lg text-gray-800 hover:bg-yellow-50 transition-all duration-200"
-                  >
-                    <FaUserCircle className="text-xl" /> Profile
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setMenuOpen(false);
-                      setDropdownOpen(false);
-                    }}
-                    className="w-full text-left flex items-center space-x-3 px-6 py-3 text-lg text-red-600 hover:bg-red-50 transition-all duration-200"
-                  >
-                    <FaSignOutAlt className="text-xl" /> Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <li>
-                <button
-                  onClick={handleLoginClick} // Use the new handler for mobile as well
-                  className="w-full text-left flex items-center space-x-3 px-6 py-3 text-lg text-gray-800 hover:bg-yellow-50 transition-all duration-200"
-                >
-                  <AiOutlineGoogle className="text-xl" /> Continue with Google
-                </button>
-              </li>
+            {!user && (
+              <button
+                onClick={handleLoginClick}
+                className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition mt-2"
+              >
+                <AiOutlineGoogle />
+                <span>Sign in</span>
+              </button>
             )}
-          </ul>
-        </nav>
+          </nav>
+        </div>
       )}
-    </header>
-  );
-}
+    </header>  );}
