@@ -1,55 +1,58 @@
+/* src/components/Footer.jsx */
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaPinterest } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
-function Footer() {
+export default function Footer() {
   return (
-    <footer className="bg-yellow-100 py-10 border-t border-yellow-200">
-      <div className="container mx-auto px-6 text-center">
-        {/* App Title and Description */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-extrabold text-orange-700 mb-4 font-serif">Ethiopian Cuisine</h2>
-          <p className="text-gray-700 text-lg leading-relaxed max-w-2xl mx-auto">
-            Bringing you the best recipes and cooking tips to make your meals delicious, authentic, and fun. Explore the rich flavors of Ethiopia!
+    <footer className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 border-t border-orange-200 py-12">
+      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-700">
+        {/* Branding */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-orange-600">Ethiopian Cuisine</h2>
+          <p className="text-sm leading-relaxed">
+            Discover authentic Ethiopian recipes and culinary tips—bringing the vibrant flavors of Ethiopia right to your kitchen.
           </p>
         </div>
 
         {/* Quick Links */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-orange-600 mb-4">Quick Links</h3>
-          <div className="flex justify-center space-x-6 text-lg">
-            <Link className="text-gray-800 hover:text-orange-700 transition-colors duration-300" to="/">Home</Link>
-            <Link className="text-gray-800 hover:text-orange-700 transition-colors duration-300" to="/create-recipes">Create Recipes</Link>
-            <Link className="text-gray-800 hover:text-orange-700 transition-colors duration-300" to="/saved-recipes">Saved Recipes</Link>
-          </div>
+        <div>
+          <h3 className="text-lg font-semibold text-orange-500 mb-4">Quick Links</h3>
+          <ul className="space-y-2">
+            <li>
+              <Link to="/" className="hover:text-orange-600 transition">Home</Link>
+            </li>
+            <li>
+              <Link to="/create-recipes" className="hover:text-orange-600 transition">Create Recipe</Link>
+            </li>
+            <li>
+              <Link to="/saved-recipes" className="hover:text-orange-600 transition">Saved Recipes</Link>
+            </li>
+            <li>
+              <Link to="/profile" className="hover:text-orange-600 transition">Profile</Link>
+            </li>
+          </ul>
         </div>
 
-        {/* Social Media Links */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-orange-600 mb-4">Follow Us</h3>
-          <div className="flex justify-center space-x-6">
-            <a className="text-orange-700 hover:text-orange-900 transition-colors duration-300" href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <FaFacebook className="h-8 w-8" />
+        {/* Social & Copyright */}
+        <div className="flex flex-col items-center md:items-end space-y-4">
+          <div className="flex space-x-4 text-orange-600">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <FaFacebook size={20} className="hover:text-orange-700 transition" />
             </a>
-            <a className="text-orange-700 hover:text-orange-900 transition-colors duration-300" href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <FaTwitter className="h-8 w-8" />
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <FaTwitter size={20} className="hover:text-orange-700 transition" />
             </a>
-            <a className="text-orange-700 hover:text-orange-900 transition-colors duration-300" href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <FaInstagram className="h-8 w-8" />
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <FaInstagram size={20} className="hover:text-orange-700 transition" />
             </a>
-            <a className="text-orange-700 hover:text-orange-900 transition-colors duration-300" href="https://pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
-              <FaPinterest className="h-8 w-8" />
+            <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+              <FaPinterest size={20} className="hover:text-orange-700 transition" />
             </a>
           </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="text-gray-600 text-sm mt-8">
-          <p>&copy; {new Date().getFullYear()} Ethiopian Cuisine. All rights reserved.</p>
+          <p className="text-sm text-gray-600">&copy; {new Date().getFullYear()} Ethiopian Cuisine. All rights reserved.</p>
         </div>
       </div>
     </footer>
   );
 }
-
-export default Footer;
