@@ -30,14 +30,11 @@ export function AuthProvider({ children }) {
   // This assumes your backend has an endpoint like /auth/google
   // that handles the OAuth redirection.
   const login = () => {
-    // It's crucial that this URL matches your backend's Google OAuth initiation endpoint.
-    // Ensure VITE_API_URL is correctly set in your .env file (e.g., VITE_API_URL=http://localhost:5000)
+   
     const backendAuthUrl = `https://mern-ethiopian-recipes.onrender.com/auth/google`;
     console.log("Redirecting to backend for Google login:", backendAuthUrl);
     window.location.href = backendAuthUrl;
-    // After redirection, the user will be sent to Google, then back to your backend,
-    // and finally your backend should redirect them back to your frontend,
-    // at which point the useEffect above will re-fetch the user status.
+   
   };
 
   const logout = () => {
