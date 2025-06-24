@@ -7,15 +7,31 @@ export default function RecipeDetail() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // New state for loading
 
   useEffect(() => {
     api.get(`/recipes/${id}`)
-      .then(r => setRecipe(r.data))
-      .catch(() => setError('Could not load recipe.'));
+      .then(r => {
+        setRecipe(r.data);
+        setIsLoading(false); // Set loading to false on success
+      })
+      .catch(() => {
+        setError('Could not load recipe.');
+        setIsLoading(false); // Set loading to false on error as well
+      });
   }, [id]);
 
   if (error) return <div className="text-red-500 p-8">{error}</div>;
-  if (!recipe) return <div className="p-8">Loading…</div>;
+
+  // Use the new isLoading state
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-yellow-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-orange-500"></div>
+        <p className="ml-4 text-orange-700 text-xl">Loading recipe...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-yellow-50 py-12 px-4">

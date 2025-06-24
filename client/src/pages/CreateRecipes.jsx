@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import api from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
-import { FaUtensils, FaPenFancy, FaList, FaClock, FaImage, FaPlus, FaBookOpen, FaTimesCircle } from 'react-icons/fa'; // FaTimesCircle imported
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+import { FaUtensils, FaPenFancy, FaList, FaClock, FaImage, FaPlus, FaBookOpen, FaTimesCircle } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CreateRecipes() {
   const [recipe, setRecipe] = useState({
     name: "",
     description: "",
-    ingredients: [""], // Start with one empty ingredient field
+    ingredients: [""],
     instruction: "",
     cookingTime: 0,
   });
   const [file, setFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission loading
   const navigate = useNavigate();
 
   const handleChange = e => {
@@ -39,18 +40,27 @@ export default function CreateRecipes() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+
     if (!file) {
       toast.error("Please select an image for your recipe!");
       return;
     }
+
+    // Filter out empty ingredient fields before sending to avoid sending empty strings
+    const filteredIngredients = recipe.ingredients.filter(ing => ing.trim() !== '');
+    if (filteredIngredients.length === 0) {
+      toast.error("Please add at least one ingredient.");
+      return;
+    }
+
+    setIsSubmitting(true); // Start loading
 
     const form = new FormData();
     form.append('name', recipe.name);
     form.append('description', recipe.description);
     form.append('instruction', recipe.instruction);
     form.append('cookingTime', recipe.cookingTime);
-    // Filter out empty ingredient fields before sending to avoid sending empty strings
-    recipe.ingredients.filter(ing => ing.trim() !== '').forEach(ing => form.append('ingredients', ing));
+    filteredIngredients.forEach(ing => form.append('ingredients', ing));
     form.append('image', file);
 
     try {
@@ -60,18 +70,30 @@ export default function CreateRecipes() {
     } catch (err) {
       console.error("Error creating recipe:", err);
       toast.error(err.response?.data?.message || err.message || "An error occurred while creating the recipe.");
+    } finally {
+      setIsSubmitting(false); // End loading regardless of success or failure
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 py-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 py-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-inter relative">
+      {/* Loading Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-orange-500 mb-4"></div>
+            <p className="text-white text-xl font-semibold">Creating your recipe...</p>
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-lg md:max-w-xl">
         <h1 className="text-5xl md:text-6xl font-extrabold text-center text-orange-800 mb-12 drop-shadow-md font-playfair-display animate-fade-in-down flex items-center justify-center">
           <FaUtensils className="text-orange-600 mr-4 text-5xl md:text-6xl" /> Create Your Recipe
         </h1>
 
         <form onSubmit={handleSubmit}
-          className="bg-white p-10 rounded-3xl shadow-2xl w-full space-y-7 border border-gray-100 relative z-10 animate-fade-in-up">
+          className={`bg-white p-10 rounded-3xl shadow-2xl w-full space-y-7 border border-gray-100 relative z-10 animate-fade-in-up ${isSubmitting ? 'opacity-70 pointer-events-none' : ''}`}> {/* Apply opacity and disable interaction when submitting */}
 
           {/* Recipe Name */}
           <div>
@@ -86,6 +108,7 @@ export default function CreateRecipes() {
               required
               placeholder="e.g., Doro Wat"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ease-in-out"
+              disabled={isSubmitting} // Disable during submission
             />
           </div>
 
@@ -103,6 +126,7 @@ export default function CreateRecipes() {
               required
               placeholder="A rich, spicy chicken stew..."
               className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ease-in-out resize-y"
+              disabled={isSubmitting} // Disable during submission
             />
           </div>
 
@@ -119,6 +143,7 @@ export default function CreateRecipes() {
                   placeholder={`Ingredient ${i + 1}`}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ease-in-out"
                   required
+                  disabled={isSubmitting} // Disable during submission
                 />
                 {recipe.ingredients.length > 1 && (
                   <button
@@ -126,6 +151,7 @@ export default function CreateRecipes() {
                     onClick={() => removeIngredient(i)}
                     className="ml-3 text-red-500 hover:text-red-700 transition-colors duration-200"
                     aria-label={`Remove ingredient ${i + 1}`}
+                    disabled={isSubmitting} // Disable during submission
                   >
                     <FaTimesCircle size={20} />
                   </button>
@@ -136,6 +162,7 @@ export default function CreateRecipes() {
               type="button"
               onClick={addIngredient}
               className="inline-flex items-center mt-2 px-5 py-2 bg-orange-50 text-orange-600 rounded-full font-medium hover:bg-orange-100 hover:text-orange-700 transition-colors duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.01]"
+              disabled={isSubmitting} // Disable during submission
             >
               <FaPlus className="mr-2" /> Add Ingredient
             </button>
@@ -155,6 +182,7 @@ export default function CreateRecipes() {
               required
               placeholder="Step-by-step cooking guide..."
               className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ease-in-out resize-y"
+              disabled={isSubmitting} // Disable during submission
             />
           </div>
 
@@ -173,6 +201,7 @@ export default function CreateRecipes() {
               min="1"
               placeholder="e.g., 60"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ease-in-out"
+              disabled={isSubmitting} // Disable during submission
             />
           </div>
 
@@ -191,6 +220,7 @@ export default function CreateRecipes() {
                          file:rounded-full file:border-0 file:text-sm file:font-semibold
                          file:bg-orange-100 file:text-orange-600 hover:file:bg-orange-200
                          transition-all duration-200 cursor-pointer"
+              disabled={isSubmitting} // Disable during submission
             />
             {file && <p className="text-sm text-gray-500 mt-2">Selected file: <span className="font-medium text-gray-700">{file.name}</span></p>}
           </div>
@@ -199,8 +229,9 @@ export default function CreateRecipes() {
           <button
             type="submit"
             className="w-full bg-orange-600 text-white py-3.5 rounded-full font-bold text-xl shadow-lg hover:bg-orange-700 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.005]"
+            disabled={isSubmitting} // Disable during submission
           >
-            Create Recipe
+            {isSubmitting ? 'Creating...' : 'Create Recipe'} {/* Change button text during submission */}
           </button>
         </form>
       </div>
