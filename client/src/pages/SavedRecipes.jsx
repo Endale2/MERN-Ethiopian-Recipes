@@ -2,25 +2,27 @@ import React, { useEffect, useState, useContext } from 'react';
 import api from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.jsx';
-import { FaClock, FaTrash, FaSpinner } from 'react-icons/fa';
+import { FaClock, FaTrash, FaSpinner } from 'react-icons/fa'; // FaSpinner is already here!
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function SavedRecipes() {
   const [saved, setSaved] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Excellent! Already have a loading state
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Load saved recipes when component mounts or user changes
   useEffect(() => {
+    // If no user, immediately stop loading and show login prompt
     if (!user) {
       setSaved([]);
       setLoading(false);
-      // Optional: Show a toast if user is not logged in and tries to access this page
       toast.info('Please log in to view your saved recipes.', { toastId: 'login-info' });
       return;
     }
+
+    // Start loading state when fetching begins
     setLoading(true);
     api.get('/recipes/saved')
       .then(res => {
@@ -33,7 +35,7 @@ export default function SavedRecipes() {
           toast.error('Failed to load your saved recipes. Please try again.');
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoading(false)); // Always set loading to false when finished
   }, [user]);
 
   const removeRecipe = async (id, e) => {
@@ -57,6 +59,7 @@ export default function SavedRecipes() {
   // Render based on authentication and loading states
   // ==========================================================
 
+  // Display prompt to log in if no user is authenticated
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8 font-inter text-center">
@@ -69,16 +72,17 @@ export default function SavedRecipes() {
         >
             Log In Now
         </button>
-        <ToastContainer /> {/* Include ToastContainer here too for this state */}
+        <ToastContainer />
       </div>
     );
   }
 
+  // Display the spinner loader when data is being fetched
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
-        <FaSpinner className="animate-spin text-orange-600 text-5xl mr-4" />
-        <p className="text-gray-700 text-2xl font-medium">Loading your delicious saved recipes...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-orange-500 mb-4"></div> {/* Consistent spinner style */}
+        <p className="text-orange-700 text-2xl font-medium">Loading your delicious saved recipes...</p>
       </div>
     );
   }
@@ -107,12 +111,12 @@ export default function SavedRecipes() {
         </div>
       ) : (
         <ul className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto">
-          {saved.map((r, index) => ( // Added index for staggered animation
+          {saved.map((r, index) => (
             <li
               key={r._id}
-              onClick={() => navigate(`/recipes/${r._id}`)} // Correct functionality
+              onClick={() => navigate(`/recipes/${r._id}`)}
               className="bg-white rounded-xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-103 hover:shadow-2xl cursor-pointer group animate-card-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }} // Staggered animation
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Recipe Image Section - Styled like HomePage */}
               <div className="w-full h-48 overflow-hidden rounded-t-xl relative">
@@ -137,7 +141,7 @@ export default function SavedRecipes() {
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={e => { e.stopPropagation(); navigate(`/recipes/${r._id}`); }} // Corrected _id
+                    onClick={e => { e.stopPropagation(); navigate(`/recipes/${r._id}`); }}
                     className="flex-1 bg-orange-600 text-white py-3 rounded-lg flex items-center justify-center text-lg font-semibold transition-all duration-300 hover:bg-orange-700 shadow-md hover:shadow-lg"
                   >
                     View
