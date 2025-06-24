@@ -2,32 +2,52 @@ import React, { useEffect, useState, useContext } from 'react';
 import api from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { FaClock, FaHeart } from 'react-icons/fa';
+import { FaClock, FaHeart, FaPlus } from 'react-icons/fa'; // Import FaPlus for the FAB
+import Loader from '../components/Loader'; // Import the new Loader component
 
 export default function HomePage() {
   const [recipes, setRecipes] = useState([]);
   const [saved, setSaved] = useState([]);
+  const [loadingRecipes, setLoadingRecipes] = useState(true); // New loading state for recipes
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading, login, showLoginModal, hideLoginModal } = useContext(AuthContext); // Destructure modal states/functions
 
   useEffect(() => {
-    // Fetch all recipes
-    api.get('/recipes')
-      .then(r => setRecipes(r.data))
-      .catch(error => console.error("Error fetching recipes:", error));
+    const fetchRecipes = async () => {
+      setLoadingRecipes(true);
+      try {
+        const r = await api.get('/recipes');
+        setRecipes(r.data);
+      } catch (error) {
+        console.error("Error fetching recipes:", error);
+      } finally {
+        setLoadingRecipes(false);
+      }
+    };
 
-    // Fetch saved recipes if user is logged in
-    if (user) {
-      api.get('/recipes/saved')
-        .then(r => setSaved(r.data.savedRecipes))
-        .catch(error => console.error("Error fetching saved recipes:", error));
-    }
+    const fetchSavedRecipes = async () => {
+      if (user) {
+        try {
+          const r = await api.get('/recipes/saved');
+          setSaved(r.data.savedRecipes);
+        } catch (error) {
+          console.error("Error fetching saved recipes:", error);
+        }
+      } else {
+        setSaved([]); // Clear saved recipes if user logs out
+      }
+    };
+
+    fetchRecipes();
+    fetchSavedRecipes();
   }, [user]);
 
   const saveRecipe = async id => {
     if (!user) {
-      // Optionally, you can show a toast notification or a modal here
-      alert("Please log in to save recipes!");
+      hideLoginModal(); // Ensure modal is hidden before showing it
+      setTimeout(() => {
+        showLoginModal(true); // Show the login modal
+      }, 100); // Small delay to ensure state update
       return;
     }
     try {
@@ -42,33 +62,31 @@ export default function HomePage() {
 
   const isSaved = id => saved.some(r => r._id === id);
 
+  // Show a combined loading indicator if either auth or recipes are loading
+  if (authLoading || loadingRecipes) {
+    return <Loader />;
+  }
+
   return (
-    // Changed min-h-screen to h-full for potentially full height, removed max-width constraints for background
     <div className="h-full bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Title with improved animation */}
-      <h1 className="text-5xl font-extrabold text-center text-orange-800 mb-16 animate-fade-in-down">
+      <h1 className="text-5xl font-extrabold text-center text-orange-800 mb-16 animate-fade-in-down font-playfair-display">
         Savor the Flavors of Ethiopia
       </h1>
 
-      {/* Removed max-w-7xl and mx-auto from this div to allow content to spread */}
       <div className="w-full">
-        {recipes.length === 0 && !user ? (
-          // Loading message with a subtle pulse animation
-          <p className="text-center text-gray-600 text-xl animate-pulse">Loading delicious recipes or no recipes found...</p>
+        {recipes.length === 0 ? (
+          <p className="text-center text-gray-600 text-xl animate-pulse">No recipes found. Be the first to add one!</p>
         ) : (
-          <ul className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 sm:px-6 lg:px-8"> {/* Added back padding for grid */}
+          <ul className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 sm:px-6 lg:px-8">
             {recipes.map((r, index) => (
               <li key={r._id}
-                // Card animations: fade-in, scale on hover, shadow
                 className={`bg-white rounded-xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-103 hover:shadow-2xl cursor-pointer group animate-fade-in delay-${index * 100}`}
                 onClick={() => navigate(`/recipes/${r._id}`)}>
                 <div className="w-full h-48 overflow-hidden">
-                  {/* Image hover effect */}
                   <img src={r.imageURL || 'https://via.placeholder.com/400x300.png?text=Ethiopian+Food'} alt={r.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"/>
                 </div>
                 <div className="p-5">
-                  {/* Title hover effect */}
-                  <h2 className="text-2xl font-bold text-orange-800 mb-2 truncate group-hover:text-orange-700 transition-colors duration-300">{r.name}</h2>
+                  <h2 className="text-2xl font-bold text-orange-800 mb-2 truncate group-hover:text-orange-700 transition-colors duration-300 font-playfair-display">{r.name}</h2>
                   <p className="text-gray-700 text-sm mb-4 line-clamp-3">{r.description}</p>
                   <div className="flex items-center text-gray-500 text-sm mb-4">
                     <FaClock className="mr-2 text-orange-500"/> <span className="font-medium">{r.cookingTime}</span> mins
@@ -91,6 +109,25 @@ export default function HomePage() {
           </ul>
         )}
       </div>
+
+      {user && ( // Show FAB only if user is logged in
+        <button
+          onClick={() => navigate('/create-recipes')}
+          className="fixed bottom-8 right-8 bg-orange-600 text-white p-5 rounded-full shadow-lg text-2xl
+                     hover:bg-orange-700 transition-all duration-300 transform hover:scale-110 active:scale-95
+                     focus:outline-none focus:ring-4 focus:ring-orange-300 z-40 animate-bounce-slow"
+          aria-label="Add new recipe"
+        >
+          <FaPlus />
+        </button>
+      )}
+
+      {/* Login Modal */}
+      <LoginModal
+        show={showLoginModal}
+        onClose={hideLoginModal}
+        onLogin={login}
+      />
     </div>
   );
 }

@@ -36,7 +36,8 @@ app.use(express.json());
 // ————————————————————————————————————————————————————————
 const allowedOrigins = [
   process.env.CLIENT_URL,                                                 // e.g. Vercel #1
-  "https://ethiopian-cuisine-96a8l6oji-endale2s-projects.vercel.app"       // Vercel #2
+  "https://ethiopian-cuisine-96a8l6oji-endale2s-projects.vercel.app"  ,
+  "http://localhost:5173"     // Vercel #2
 ];
 
 app.use(
