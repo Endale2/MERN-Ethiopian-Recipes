@@ -6,21 +6,22 @@ import {
   FaSignOutAlt,
   FaBars,
   FaTimes,
-  FaUserCircle
+  FaUserCircle,
+  FaSpinner // Import FaSpinner for the loading indicator
 } from 'react-icons/fa';
 import { AiOutlineGoogle } from 'react-icons/ai'; // Google icon
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext.jsx'; // Ensure this path is correct
+import { AuthContext } from '../contexts/AuthContext.jsx';
 
 export default function NavBar() {
-  const { user, loading, login, logout } = useContext(AuthContext); // Assuming 'login' handles Google authentication
+  const { user, loading, login, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false); 
-  const avatarRef = useRef(null); 
-  const menuRef = useRef(null);   
+  const [scrolled, setScrolled] = useState(false);
+  const avatarRef = useRef(null);
+  const menuRef = useRef(null);
 
   const links = [
     { to: '/', label: 'Home', icon: FaHome },
@@ -32,6 +33,7 @@ export default function NavBar() {
       : [])
   ];
 
+  // Close dropdown/mobile menu when clicking outside
   useEffect(() => {
     const onClickOutside = (e) => {
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
@@ -43,25 +45,26 @@ export default function NavBar() {
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
-  }, [menuOpen]);
+  }, [menuOpen]); // Depend on menuOpen to re-attach listener if menu state changes
 
+  // Handle scroll effect for sticky header
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50; 
-      if (isScrolled !== scrolled) {
-        setScrolled(!scrolled);
-      }
+      const isScrolled = window.scrollY > 50;
+      setScrolled(isScrolled); // Directly set the state based on comparison
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrolled]);
+  }, []); // Empty dependency array means this runs once on mount
 
-  if (loading) return null;
+  // Removed `if (loading) return null;` to allow the navbar to always render,
+  // showing the loading indicator within it.
 
   const handleLoginClick = () => {
     console.log("Login button clicked in NavBar. Attempting to call AuthContext's login function.");
     login(); // Call the login function from AuthContext
+    setMenuOpen(false); // Close mobile menu if open when initiating login
   };
 
   return (
@@ -91,8 +94,9 @@ export default function NavBar() {
             >
               <Icon className="text-xl group-hover:scale-110 transition-transform duration-200" />
               <span>{label}</span>
+              {/* Smooth animation indicator for active nav link */}
               {location.pathname === to && (
-                <span className="absolute -bottom-1 left-0 w-full h-[3px] bg-orange-500 rounded-full animate-hover-underline"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-[3px] bg-orange-500 rounded-full animate-active-underline"></span>
               )}
             </Link>
           ))}
@@ -100,7 +104,12 @@ export default function NavBar() {
 
         {/* Authentication/User Section & Mobile Toggle */}
         <div className="flex items-center space-x-6">
-          {user ? (
+          {loading ? ( // Display loading indicator when authentication is in progress
+            <div className="flex items-center text-orange-600 animate-pulse transition-all duration-300">
+              <FaSpinner className="animate-spin text-2xl mr-3" />
+              <span className="text-lg font-medium hidden sm:block">Authenticating...</span>
+            </div>
+          ) : user ? (
             // User Avatar and Dropdown
             <div ref={avatarRef} className="relative">
               <img
@@ -111,7 +120,7 @@ export default function NavBar() {
                   }`
                 }
                 alt="avatar"
-                className="w-12 h-12 rounded-full cursor-pointer border-3 border-orange-400 object-cover 
+                className="w-12 h-12 rounded-full cursor-pointer border-3 border-orange-400 object-cover
                            transition-all duration-300 hover:border-orange-600 hover:shadow-lg hover:scale-105"
                 onClick={() => setDropdownOpen((o) => !o)}
               />
@@ -149,15 +158,16 @@ export default function NavBar() {
               </div>
             </div>
           ) : (
-            // "Continue with Google" Button (calling handleLoginClick)
+            // "Continue with Google" Button
             <button
-              onClick={handleLoginClick} // Use the new handler
-              className="flex items-center space-x-3 bg-amber-600 text-white px-7 py-3 rounded-full font-semibold shadow-lg 
-                         hover:bg-amber-700 transition-all duration-300 hover:scale-105 transform
-                         focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 group"
+              onClick={handleLoginClick}
+              className="flex items-center space-x-3 bg-amber-600 text-white px-7 py-3 rounded-full font-semibold shadow-lg
+                          hover:bg-amber-700 transition-all duration-300 hover:scale-105 transform
+                          focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 group"
             >
               <AiOutlineGoogle className="text-2xl group-hover:rotate-6 transition-transform duration-300" />
-              <span>Continue with Google</span>
+              <span className="hidden sm:block">Continue with Google</span> {/* Hide text on small screens */}
+              <span className="sm:hidden">Google</span> {/* Show "Google" only on small screens */}
             </button>
           )}
 
