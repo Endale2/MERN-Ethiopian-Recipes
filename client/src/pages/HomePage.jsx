@@ -11,7 +11,7 @@ export default function HomePage() {
   const [saved, setSaved] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [savingIds, setSavingIds] = useState([]);         // track which recipes are being (un)saved
+  const [savingIds, setSavingIds] = useState([]); // which cards are (un)saving
   const navigate = useNavigate();
   const { user, login } = useContext(AuthContext);
 
@@ -30,7 +30,7 @@ export default function HomePage() {
         }
       } catch (err) {
         console.error(err);
-        setError('Could not load recipes.');
+        setError('😔 Oops! Could not load recipes. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -43,39 +43,60 @@ export default function HomePage() {
 
   const toggleSave = async (id) => {
     if (!user) {
-      toast.info('Please continue with Google to save recipes.', { autoClose: 3000 });
+      toast.info(
+        '🙏 We appreciate your interest! Please continue with Google to unlock saving your favorite recipes.',
+        {
+          icon: <FaHeart className="text-red-500" />,
+          autoClose: 4000
+        }
+      );
       login();
       return;
     }
 
-    // Start loader on this card
     setSavingIds(ids => [...ids, id]);
     try {
       if (!isSaved(id)) {
         await api.put('/recipes/save', { recipeId: id });
+        toast.success(
+          '✅ Added to your collection! Keep cooking up a storm.',
+          {
+            icon: <FaHeart className="text-white" />,
+            autoClose: 3000
+          }
+        );
       } else {
         await api.delete(`/recipes/saved/${id}`);
+        toast.success(
+          '🗑️ Removed from your saved recipes.',
+          { autoClose: 3000 }
+        );
       }
-      // Refresh saved list
       const { data } = await api.get('/recipes/saved');
       setSaved(data.savedRecipes);
     } catch (err) {
       console.error(err);
-      toast.error('Could not update saved status.', { autoClose: 3000 });
+      toast.error('😕 Something went wrong. Please try again.', { autoClose: 3000 });
     } finally {
       setSavingIds(ids => ids.filter(x => x !== id));
     }
   };
 
   if (error) {
-    return <div className="text-red-500 p-8 text-center text-xl">{error}</div>;
+    return (
+      <div className="text-red-500 p-8 text-center text-xl">
+        {error}
+      </div>
+    );
   }
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-yellow-50 to-orange-50">
         <FaSpinner className="animate-spin text-4xl text-orange-500 mb-4" />
-        <p className="text-orange-700 text-xl">Loading delicious recipes…</p>
+        <p className="text-orange-700 text-xl">
+          🍲 Whisking up delicious recipes… please wait!
+        </p>
       </div>
     );
   }
@@ -108,7 +129,9 @@ export default function HomePage() {
               <h2 className="text-2xl font-bold text-orange-800 mb-2 truncate group-hover:text-orange-700 transition-colors duration-300">
                 {r.name}
               </h2>
-              <p className="text-gray-700 text-sm mb-4 line-clamp-3">{r.description}</p>
+              <p className="text-gray-700 text-sm mb-4 line-clamp-3">
+                {r.description}
+              </p>
               <div className="flex items-center text-gray-500 text-sm mb-4">
                 <FaClock className="mr-2 text-orange-500" />
                 <span className="font-medium">{r.cookingTime} mins</span>
