@@ -1,6 +1,7 @@
 import express from 'express';
 import RecipeModel from '../models/Recipe.js';
 import { upload } from '../config/mutler.js';
+import supabase from '../config/supabaseClient.js';
 
 export const recipesRouter = express.Router();
 
