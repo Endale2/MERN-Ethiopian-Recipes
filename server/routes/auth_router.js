@@ -29,7 +29,8 @@ authRouter.get('/logout', (req, res) => {
     if (err) return res.status(500).json({ message: 'Logout Error' });
     req.session.destroy(() => {
       res.clearCookie('sid');
-      res.redirect(process.env.CLIENT_URL);
+      res.redirect(`${process.env.CLIENT_URL}`);
+
     });
   });
 });
