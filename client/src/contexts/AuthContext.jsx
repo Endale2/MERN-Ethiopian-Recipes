@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
   const login = () => {
     // It's crucial that this URL matches your backend's Google OAuth initiation endpoint.
     // Ensure VITE_API_URL is correctly set in your .env file (e.g., VITE_API_URL=http://localhost:5000)
-    const backendAuthUrl = `${import.meta.env.VITE_API_URL}/auth/google`;
+    const backendAuthUrl = `https://mern-ethiopian-recipes.vercel.app/auth/google`;
     console.log("Redirecting to backend for Google login:", backendAuthUrl);
     window.location.href = backendAuthUrl;
     // After redirection, the user will be sent to Google, then back to your backend,
