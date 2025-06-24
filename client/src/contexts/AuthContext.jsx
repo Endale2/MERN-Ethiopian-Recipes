@@ -1,14 +1,12 @@
-// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../axiosConfig'; // Your Axios instance
-import { useNavigate } from 'react-router-dom'; // Import useNavigate if you want to redirect after login (optional for OAuth flow)
-
+import api from '../axiosConfig'; 
+import { useNavigate } from 'react-router-dom'; 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     // This effect runs once on component mount to check the current authentication status
@@ -34,7 +32,7 @@ export function AuthProvider({ children }) {
   const login = () => {
     // It's crucial that this URL matches your backend's Google OAuth initiation endpoint.
     // Ensure VITE_API_URL is correctly set in your .env file (e.g., VITE_API_URL=http://localhost:5000)
-    const backendAuthUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/auth/google`;
+    const backendAuthUrl = `https://mern-ethiopian-recipes.onrender.com/auth/google`;
     console.log("Redirecting to backend for Google login:", backendAuthUrl);
     window.location.href = backendAuthUrl;
     // After redirection, the user will be sent to Google, then back to your backend,
