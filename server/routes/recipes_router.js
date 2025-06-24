@@ -1,104 +1,86 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import RecipeModel from '../models/Recipes.js';
-import UserModel from '../models/User.js';
+import RecipeModel from '../models/Recipe.js';
+import { upload } from '../config/mutler.js';
 
-const router = express.Router();
+export const recipesRouter = express.Router();
 
-// Get all recipes
-router.get('/', async (req, res) => {
+// Auth middleware
+const ensureAuth = (req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ message: 'Not authorized' });
+};
+
+// Create recipe with image upload
+recipesRouter.post(
+  '/',
+  ensureAuth,
+  upload.single('image'),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'Image is required.' });
+      }
+
+      const imageURL = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      const recipeData = {
+        ...req.body,
+        imageURL,
+        userOwner: req.user.id
+      };
+
+      const newRecipe = new RecipeModel(recipeData);
+      await newRecipe.save();
+      res.status(201).json(newRecipe);
+    } catch (err) {
+      console.error('Error creating recipe:', err);
+      res.status(500).json({ message: 'Server error.' });
+    }
+  }
+);
+
+
+// Save recipe
+recipesRouter.put('/save', ensureAuth, async (req, res) => {
+  const user = await import('../models/User.js').then(m => m.default.findById(req.user.id));
+  if (!user.savedRecipes.includes(req.body.recipeId)) {
+    user.savedRecipes.push(req.body.recipeId);
+    await user.save();
+  }
+  res.json({ savedRecipes: user.savedRecipes });
+});
+
+// Get saved recipes
+recipesRouter.get('/saved', ensureAuth, async (req, res) => {
+  const user = await import('../models/User.js').then(m => m.default.findById(req.user.id).populate('savedRecipes'));
+  res.json({ savedRecipes: user.savedRecipes });
+});
+
+// Delete saved recipe
+recipesRouter.delete('/saved/:recipeId', ensureAuth, async (req, res) => {
+  const user = await import('../models/User.js').then(m => m.default.findById(req.user.id));
+  user.savedRecipes = user.savedRecipes.filter(id => id.toString() !== req.params.recipeId);
+  await user.save();
+  res.json({ savedRecipes: user.savedRecipes });
+});
+
+// Get single recipe
+recipesRouter.get('/:id', async (req, res) => {
+  const recipe = await RecipeModel.findById(req.params.id).populate('userOwner', 'displayName photoURL');
+  if (!recipe) return res.status(404).json({ message: 'Not found' });
+  res.json(recipe);
+});
+
+// Get all recipes (public)
+recipesRouter.get('/', async (req, res) => {
   try {
-    const recipes = await RecipeModel.find({});
+    const recipes = await RecipeModel
+      .find({})
+      .populate('userOwner', 'displayName photoURL');
     res.json(recipes);
   } catch (err) {
-    console.error("Error fetching recipes:", err);
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// Create a new recipe
-router.post('/', async (req, res) => {
-  try {
-    const recipe = new RecipeModel(req.body);
-    await recipe.save();
-    res.json(recipe);
-  } catch (err) {
-    console.error("Error creating recipe:", err);
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// Save a recipe to user's saved recipes
-router.put('/', async (req, res) => {
-  const { recipeId, userId } = req.body;
-
-  try {
-    const recipe = await RecipeModel.findById(recipeId);
-    if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
-
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    user.savedRecipes.push(recipe);
-    await user.save();
-
-    res.json({ savedRecipes: user.savedRecipes });
-  } catch (err) {
-    console.error("Error saving recipe:", err);
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// Get the current user's saved recipes
-router.get('/saved-recipes/:userId', async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.params.userId).populate('savedRecipes');
-    res.json({ savedRecipes: user.savedRecipes });
-  } catch (err) {
-    console.error("Error fetching saved recipes:", err);
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// Delete a saved recipe
-router.delete('/saved-recipes/:userId/:recipeId', async (req, res) => {
-  const { userId, recipeId } = req.params;
-
-  try {
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    user.savedRecipes = user.savedRecipes.filter(
-      (savedRecipeId) => savedRecipeId.toString() !== recipeId
-    );
-    await user.save();
-
-    res.json({ savedRecipes: user.savedRecipes });
-  } catch (err) {
-    console.error("Error deleting saved recipe:", err);
-    res.status(500).json({ message: "Server error", error: err });
-  }
-});
-
-// Get a single recipe by ID with userOwner populated
-router.get('/:id', async (req, res) => {
-  try {
-    const recipe = await RecipeModel.findById(req.params.id).populate('userOwner');
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-    res.json(recipe);
-  } catch (error) {
-    console.error("Error fetching recipe:", error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error('Error fetching recipes:', err);
+    res.status(500).json({ message: 'Server error.' });
   }
 });
 
 
-export { router as recipesRouter };

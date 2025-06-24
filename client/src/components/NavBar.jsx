@@ -1,109 +1,77 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import { FaHome, FaUtensils, FaBookmark, FaSignOutAlt, FaBars, FaTimes, FaGoogle } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import { useCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom";
-import { FaHome, FaUtensils, FaBookmark, FaSignInAlt, FaUserPlus, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
-import { useState } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
-function NavBar() {
-  const [cookies, setCookies] = useCookies(["access_tokens"]);
-  const navigate = useNavigate();
+export default function NavBar() {
+  const { user, loading, logout } = useContext(AuthContext);
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isActive = p => location.pathname === p ? 'font-semibold' : '';
 
-  const logout = () => {
-    setCookies("access_tokens", "");
-    window.localStorage.removeItem("userId");
-    navigate("/login");
-  };
-
-  const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const getLinkClassName = (path) => 
-    `flex items-center text-orange-800 hover:text-orange-600 transition-colors duration-300 ${
-      location.pathname === path ? 'font-semibold' : ''
-    }`;
+  if (loading) return null;
 
   return (
     <nav className="bg-yellow-100 shadow-lg">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-6">
-          <div className="text-3xl font-extrabold text-orange-700 flex items-center space-x-2">
-            <FaUtensils size={32} />
-            <span className="font-cursive">Ethiopian Cuisine</span>
-          </div>
-          <div className="hidden md:flex space-x-6">
-            <Link className={getLinkClassName("/")} to="/">
-              <FaHome className="mr-1" /> Home
-            </Link>
-            {cookies.access_tokens ? (<>
-            <Link className={getLinkClassName("/create-recipes")} to="/create-recipes">
-              <FaUtensils className="mr-1" /> Create Recipes
-            </Link>
-            <Link className={getLinkClassName("/saved-recipes")} to="/saved-recipes">
-              <FaBookmark className="mr-1" /> Saved Recipes
-            </Link>
-            </>
-            ):
-            (
-              <p></p>
-            )
-            }
-          </div>
-        </div>
+        <Link to="/" className="flex items-center text-orange-700 space-x-2">
+          <FaUtensils size={32}/>
+          <span className="text-3xl font-extrabold font-cursive">Ethiopian Cuisine</span>
+        </Link>
+
+        {/* Desktop links */}
         <div className="hidden md:flex items-center space-x-6">
-          {!cookies.access_tokens ? (
+          <Link to="/" className={`flex items-center ${isActive('/')}`}><FaHome className="mr-1"/>Home</Link>
+          {user && (
             <>
-              <Link className={getLinkClassName("/login")} to="/login">
-                <FaSignInAlt className="mr-1" /> Login
-              </Link>
-              <Link className={getLinkClassName("/register")} to="/register">
-                <FaUserPlus className="mr-1" /> Register
-              </Link>
+              <Link to="/create-recipes" className={`flex items-center ${isActive('/create-recipes')}`}><FaUtensils className="mr-1"/>Create</Link>
+              <Link to="/saved-recipes" className={`flex items-center ${isActive('/saved-recipes')}`}><FaBookmark className="mr-1"/>Saved</Link>
             </>
-          ) : (
-            <button className="flex items-center text-orange-800 hover:text-orange-600 transition-colors duration-300" onClick={logout}>
-              <FaSignOutAlt className="mr-1" /> Logout
-            </button>
           )}
         </div>
-        <button className="md:hidden text-orange-800 hover:text-orange-600 transition-colors duration-300" onClick={handleMenuToggle}>
-          {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+
+        {/* Auth buttons */}
+        <div className="hidden md:flex items-center space-x-6">
+          {!user
+            ? <button
+                onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/auth/google`}
+                className="flex items-center text-orange-800 hover:text-orange-600"
+              ><FaGoogle className="mr-1"/>Login with Google</button>
+            : <button
+                onClick={logout}
+                className="flex items-center text-orange-800 hover:text-orange-600"
+              ><FaSignOutAlt className="mr-1"/>Logout</button>
+          }
+        </div>
+
+        {/* Mobile menu toggle */}
+        <button className="md:hidden" onClick={() => setMenuOpen(o=>!o)}>
+          {menuOpen ? <FaTimes size={24}/> : <FaBars size={24}/>}
         </button>
       </div>
-      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} bg-yellow-100 shadow-lg`}>
-        <div className="px-6 py-4 flex flex-col space-y-4">
-          <Link className={getLinkClassName("/")} to="/" onClick={handleMenuToggle}>
-            <FaHome className="mr-1" /> Home
-          </Link>
-          
-         
-          {!cookies.access_tokens ? (
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="md:hidden px-6 pb-4 bg-yellow-100">
+          <Link to="/" onClick={()=>setMenuOpen(false)} className="block py-2"><FaHome className="mr-1"/>Home</Link>
+          {user && (
             <>
-              <Link className={getLinkClassName("/login")} to="/login" onClick={handleMenuToggle}>
-                <FaSignInAlt className="mr-1" /> Login
-              </Link>
-              <Link className={getLinkClassName("/register")} to="/register" onClick={handleMenuToggle}>
-                <FaUserPlus className="mr-1" /> Register
-              </Link>
+              <Link to="/create-recipes" onClick={()=>setMenuOpen(false)} className="block py-2"><FaUtensils className="mr-1"/>Create</Link>
+              <Link to="/saved-recipes" onClick={()=>setMenuOpen(false)} className="block py-2"><FaBookmark className="mr-1"/>Saved</Link>
             </>
-          ) : (<>
-            <Link className={getLinkClassName("/create-recipes")} to="/create-recipes" onClick={handleMenuToggle}>
-            <FaUtensils className="mr-1" /> Create Recipes
-          </Link>
-          <Link className={getLinkClassName("/saved-recipes")} to="/saved-recipes" onClick={handleMenuToggle}>
-            <FaBookmark className="mr-1" /> Saved Recipes
-          </Link>
-            <button className="flex items-center text-orange-800 hover:text-orange-600 transition-colors duration-300" onClick={() => { logout(); handleMenuToggle(); }}>
-              <FaSignOutAlt className="mr-1" /> Logout
-            </button>
-            </>)}
+          )}
+          {!user
+            ? <button
+                onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/auth/google`}
+                className="block py-2 flex items-center"
+              ><FaGoogle className="mr-1"/>Login</button>
+            : <button
+                onClick={() => { logout(); setMenuOpen(false); }}
+                className="block py-2 flex items-center"
+              ><FaSignOutAlt className="mr-1"/>Logout</button>
+          }
         </div>
-      </div>
+      )}
     </nav>
   );
 }
-
-export default NavBar;
