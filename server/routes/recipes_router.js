@@ -21,15 +21,46 @@ recipesRouter.post(
         return res.status(400).json({ message: 'Image is required.' });
       }
 
-      const imageURL = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      // 1) Build a unique path in your bucket
+      const fileExt = req.file.originalname.split('.').pop();
+      const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}.${fileExt}`;
+      const filePath = `recipes/${fileName}`;
+
+      // 2) Upload buffer to Supabase Storage
+      const { error: uploadError } = await supabase
+        .storage
+        .from('recipes')
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Supabase upload error:', uploadError);
+        return res.status(500).json({ message: 'Image upload failed.' });
+      }
+
+      // 3) Generate a public URL
+      const { publicURL, error: urlError } = supabase
+        .storage
+        .from('recipes')
+        .getPublicUrl(filePath);
+
+      if (urlError) {
+        console.error('Supabase URL error:', urlError);
+        return res.status(500).json({ message: 'Could not get image URL.' });
+      }
+
+      // 4) Save recipe with Supabase URL
       const recipeData = {
         ...req.body,
-        imageURL,
+        imageURL: publicURL,
         userOwner: req.user.id
       };
 
       const newRecipe = new RecipeModel(recipeData);
       await newRecipe.save();
+
       res.status(201).json(newRecipe);
     } catch (err) {
       console.error('Error creating recipe:', err);
