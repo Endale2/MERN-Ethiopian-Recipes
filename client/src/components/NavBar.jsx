@@ -12,16 +12,15 @@ import { AiOutlineGoogle } from 'react-icons/ai'; // Google icon
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.jsx'; // Ensure this path is correct
 
-
 export default function NavBar() {
-  const { user, loading, login, logout, setShowLoginModal } = useContext(AuthContext);
+  const { user, loading, login, logout } = useContext(AuthContext); // Assuming 'login' handles Google authentication
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const avatarRef = useRef(null);
-  const menuRef = useRef(null);
+  const [scrolled, setScrolled] = useState(false); 
+  const avatarRef = useRef(null); 
+  const menuRef = useRef(null);   
 
   const links = [
     { to: '/', label: 'Home', icon: FaHome },
@@ -39,7 +38,7 @@ export default function NavBar() {
         setDropdownOpen(false);
       }
       if (menuRef.current && !menuRef.current.contains(e.target) && menuOpen) {
-        setMenuOpen(false);
+          setMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', onClickOutside);
@@ -48,9 +47,9 @@ export default function NavBar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
+      const isScrolled = window.scrollY > 50; 
       if (isScrolled !== scrolled) {
-        setScrolled(!isScrolled); // Corrected logic: setScrolled(isScrolled)
+        setScrolled(!scrolled);
       }
     };
 
@@ -58,10 +57,11 @@ export default function NavBar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [scrolled]);
 
-  if (loading) return null; // You might want a full-page loader for initial load in App.jsx
+  if (loading) return null;
 
   const handleLoginClick = () => {
-    setShowLoginModal(true); // Open the login modal
+    console.log("Login button clicked in NavBar. Attempting to call AuthContext's login function.");
+    login(); // Call the login function from AuthContext
   };
 
   return (
@@ -111,8 +111,8 @@ export default function NavBar() {
                   }`
                 }
                 alt="avatar"
-                className="w-12 h-12 rounded-full cursor-pointer border-3 border-orange-400 object-cover
-                            transition-all duration-300 hover:border-orange-600 hover:shadow-lg hover:scale-105"
+                className="w-12 h-12 rounded-full cursor-pointer border-3 border-orange-400 object-cover 
+                           transition-all duration-300 hover:border-orange-600 hover:shadow-lg hover:scale-105"
                 onClick={() => setDropdownOpen((o) => !o)}
               />
               {/* Dropdown Menu for Logged-in User */}
@@ -149,12 +149,12 @@ export default function NavBar() {
               </div>
             </div>
           ) : (
-            // "Continue with Google" Button
+            // "Continue with Google" Button (calling handleLoginClick)
             <button
-              onClick={handleLoginClick}
-              className="flex items-center space-x-3 bg-amber-600 text-white px-7 py-3 rounded-full font-semibold shadow-lg
-                            hover:bg-amber-700 transition-all duration-300 hover:scale-105 transform
-                            focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 group"
+              onClick={handleLoginClick} // Use the new handler
+              className="flex items-center space-x-3 bg-amber-600 text-white px-7 py-3 rounded-full font-semibold shadow-lg 
+                         hover:bg-amber-700 transition-all duration-300 hover:scale-105 transform
+                         focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 group"
             >
               <AiOutlineGoogle className="text-2xl group-hover:rotate-6 transition-transform duration-300" />
               <span>Continue with Google</span>
@@ -219,7 +219,7 @@ export default function NavBar() {
             ) : (
               <li>
                 <button
-                  onClick={handleLoginClick}
+                  onClick={handleLoginClick} // Use the new handler for mobile as well
                   className="w-full text-left flex items-center space-x-3 px-6 py-3 text-lg text-gray-800 hover:bg-yellow-50 transition-all duration-200"
                 >
                   <AiOutlineGoogle className="text-xl" /> Continue with Google
