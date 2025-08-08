@@ -6,13 +6,15 @@ import RecipeDetail from './pages/RecipeDetail';
 import Profile from './pages/Profile';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <NavBar />
-      <main className="pt-20">
+      <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/create-recipes" element={<CreateRecipes />} />

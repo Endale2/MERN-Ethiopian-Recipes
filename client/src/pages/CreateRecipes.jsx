@@ -11,8 +11,10 @@ import {
   FaBookOpen,
   FaTimesCircle,
   FaSpinner,
-  FaCloudUploadAlt // Added for image upload
+  FaCloudUploadAlt,
+  FaLeaf
 } from 'react-icons/fa';
+import { GiCookingPot, GiKnifeFork } from 'react-icons/gi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -104,195 +106,231 @@ export default function CreateRecipes() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-100 py-16 px-4 sm:px-6 lg:px-8 flex justify-center items-start overflow-hidden">
-      {/* Background Blobs for a modern, fluid feel */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-orange-200 rounded-full opacity-30 mix-blend-multiply filter blur-3xl animate-blob"></div>
-      <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-yellow-300 rounded-full opacity-30 mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/4 w-52 h-52 bg-red-200 rounded-full opacity-30 mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-
-      <div className="relative z-10 w-full max-w-2xl"> {/* Increased max-width */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-center text-orange-800 mb-10 drop-shadow-lg font-playfair-display flex items-center justify-center space-x-4">
-          <FaUtensils className="text-orange-600 text-4xl md:text-5xl lg:text-6xl" />
-          <span>Share Your Recipe</span>
-        </h1>
-
-        {/* Submission Overlay */}
-        {isSubmitting && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300 animate-fade-in">
-            <div className="bg-white p-10 rounded-xl shadow-2xl text-center flex flex-col items-center animate-scale-in">
-              <FaSpinner className="animate-spin text-6xl text-orange-600 mb-6" />
-              <p className="text-2xl font-semibold mb-3 text-gray-800">Crafting your culinary masterpiece...</p>
-              <p className="text-lg text-gray-600">Please wait a moment while we prepare your dish for the world!</p>
+    <div className="min-h-screen bg-gradient-to-br from-ethiopian-50 via-white to-spice-50">
+      {/* Header Section */}
+      <section className="section-padding">
+        <div className="container-max">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="mb-8">
+              <div className="inline-flex items-center space-x-2 bg-ethiopian-100 text-ethiopian-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <FaUtensils className="text-spice-500" />
+                <span>Share Your Recipe</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gradient mb-6">
+                Share Your Ethiopian Recipe
+              </h1>
+              <p className="text-xl text-earth-600 max-w-2xl mx-auto">
+                Contribute to our community by sharing your favorite Ethiopian dishes and helping others discover authentic flavors.
+              </p>
             </div>
           </div>
-        )}
+        </div>
+      </section>
 
-        <form
-          onSubmit={handleSubmit}
-          className={`bg-white p-8 md:p-10 rounded-3xl shadow-2xl space-y-7 border border-gray-100 transition-opacity duration-300 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}
-        >
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-gray-700 font-semibold mb-2 flex items-center">
-              <FaPenFancy className="inline-block mr-3 text-orange-500 text-xl" /> Recipe Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={recipe.name}
-              onChange={handleChange}
-              placeholder="e.g., Authentic Doro Wot"
-              required
-              disabled={isSubmitting}
-              className="w-full border border-gray-300 rounded-xl px-5 py-3 text-lg text-gray-800 placeholder-gray-400 focus:ring-3 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300 shadow-sm"
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-gray-700 font-semibold mb-2 flex items-center">
-              <FaBookOpen className="inline-block mr-3 text-orange-500 text-xl" /> Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={recipe.description}
-              onChange={handleChange}
-              rows={4}
-              placeholder="A rich, flavorful Ethiopian chicken stew with hard-boiled eggs."
-              required
-              disabled={isSubmitting}
-              className="w-full border border-gray-300 rounded-xl px-5 py-3 text-lg text-gray-800 placeholder-gray-400 focus:ring-3 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300 resize-y shadow-sm"
-            />
-          </div>
-
-          {/* Ingredients */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-3 flex items-center">
-              <FaList className="inline-block mr-3 text-orange-500 text-xl" /> Ingredients
-            </label>
-            <div className="space-y-4">
-              {recipe.ingredients.map((ing, idx) => (
-                <div key={idx} className="flex items-center space-x-3">
-                  <input
-                    type="text"
-                    value={ing}
-                    onChange={e => handleIngredientChange(idx, e)}
-                    placeholder={`e.g., 1 large red onion, finely chopped`}
-                    required
-                    disabled={isSubmitting}
-                    className="flex-1 border border-gray-300 rounded-xl px-5 py-3 text-lg text-gray-800 placeholder-gray-400 focus:ring-3 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300 shadow-sm"
-                  />
-                  {recipe.ingredients.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeIngredient(idx)}
-                      disabled={isSubmitting}
-                      className="text-red-500 hover:text-red-700 transition-colors duration-200 p-2 rounded-full hover:bg-red-50"
-                      aria-label={`Remove ingredient ${idx + 1}`}
-                    >
-                      <FaTimesCircle size={24} />
-                    </button>
-                  )}
+      {/* Form Section */}
+      <section className="section-padding bg-white/50 backdrop-blur-sm">
+        <div className="container-max">
+          <div className="max-w-4xl mx-auto">
+            {/* Submission Overlay */}
+            {isSubmitting && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="glass-effect rounded-2xl p-8 text-center animate-scale-in">
+                  <div className="relative mb-6">
+                    <GiCookingPot className="text-6xl text-ethiopian-500 animate-bounce-gentle" />
+                    <GiKnifeFork className="absolute -top-2 -right-2 text-2xl text-spice-500 animate-float" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-earth-800 mb-3">Crafting Your Recipe</h3>
+                  <p className="text-earth-600">Please wait while we prepare your dish for the world!</p>
                 </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={addIngredient}
-              disabled={isSubmitting}
-              className="inline-flex items-center mt-5 px-6 py-3 bg-orange-100 text-orange-700 rounded-full font-bold hover:bg-orange-200 hover:text-orange-800 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.01]"
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              className={`card p-8 md:p-10 space-y-8 ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              <FaPlus className="mr-2 text-lg" /> Add Another Ingredient
-            </button>
-          </div>
-
-          {/* Instructions */}
-          <div>
-            <label htmlFor="instruction" className="block text-gray-700 font-semibold mb-2 flex items-center">
-              <FaBookOpen className="inline-block mr-3 text-orange-500 text-xl" /> Instructions
-            </label>
-            <textarea
-              id="instruction"
-              name="instruction"
-              value={recipe.instruction}
-              onChange={handleChange}
-              rows={6}
-              placeholder="Start by sautéing onions until caramelized. Add berbere and cook for a few minutes..."
-              required
-              disabled={isSubmitting}
-              className="w-full border border-gray-300 rounded-xl px-5 py-3 text-lg text-gray-800 placeholder-gray-400 focus:ring-3 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300 resize-y shadow-sm"
-            />
-          </div>
-
-          {/* Cooking Time & Image */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="cookingTime" className="block text-gray-700 font-semibold mb-2 flex items-center">
-                <FaClock className="inline-block mr-3 text-orange-500 text-xl" /> Cooking Time (minutes)
-              </label>
-              <input
-                type="number"
-                id="cookingTime"
-                name="cookingTime"
-                value={recipe.cookingTime}
-                onChange={handleChange}
-                min="1"
-                required
-                disabled={isSubmitting}
-                placeholder="e.g., 60"
-                className="w-full border border-gray-300 rounded-xl px-5 py-3 text-lg text-gray-800 placeholder-gray-400 focus:ring-3 focus:ring-orange-200 focus:border-orange-500 transition-all duration-300 shadow-sm appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </div>
-            <div>
-              <label htmlFor="imageUpload" className="block text-gray-700 font-semibold mb-2 flex items-center">
-                <FaImage className="inline-block mr-3 text-orange-500 text-xl" /> Recipe Image
-              </label>
-              <div className="relative border border-gray-300 rounded-xl p-3 flex items-center justify-between shadow-sm focus-within:ring-3 focus-within:ring-orange-200 focus-within:border-orange-500 transition-all duration-300">
+              {/* Name */}
+              <div>
+                <label htmlFor="name" className="block text-earth-800 font-semibold mb-3 flex items-center">
+                  <FaPenFancy className="mr-3 text-ethiopian-500 text-xl" />
+                  Recipe Name
+                </label>
                 <input
-                  type="file"
-                  id="imageUpload"
-                  accept="image/*"
-                  onChange={e => setFile(e.target.files[0])}
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={recipe.name}
+                  onChange={handleChange}
+                  placeholder="e.g., Authentic Doro Wot"
                   required
                   disabled={isSubmitting}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="w-full border border-earth-200 rounded-xl px-5 py-4 text-lg text-earth-800 placeholder-earth-400 focus:ring-2 focus:ring-ethiopian-400 focus:border-ethiopian-500 transition-all duration-300 shadow-soft"
                 />
-                <span className="text-gray-700 text-base flex-1 pr-2 truncate">
-                  {file ? file.name : 'Choose an image'}
-                </span>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label htmlFor="description" className="block text-earth-800 font-semibold mb-3 flex items-center">
+                  <FaBookOpen className="mr-3 text-ethiopian-500 text-xl" />
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={recipe.description}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="A rich, flavorful Ethiopian chicken stew with hard-boiled eggs, simmered in aromatic spices and served with injera."
+                  required
+                  disabled={isSubmitting}
+                  className="w-full border border-earth-200 rounded-xl px-5 py-4 text-lg text-earth-800 placeholder-earth-400 focus:ring-2 focus:ring-ethiopian-400 focus:border-ethiopian-500 transition-all duration-300 resize-y shadow-soft"
+                />
+              </div>
+
+              {/* Ingredients */}
+              <div>
+                <label className="block text-earth-800 font-semibold mb-4 flex items-center">
+                  <FaList className="mr-3 text-ethiopian-500 text-xl" />
+                  Ingredients
+                </label>
+                <div className="space-y-4">
+                  {recipe.ingredients.map((ing, idx) => (
+                    <div key={idx} className="flex items-center space-x-3">
+                      <input
+                        type="text"
+                        value={ing}
+                        onChange={e => handleIngredientChange(idx, e)}
+                        placeholder={`e.g., 1 large red onion, finely chopped`}
+                        required
+                        disabled={isSubmitting}
+                        className="flex-1 border border-earth-200 rounded-xl px-5 py-4 text-lg text-earth-800 placeholder-earth-400 focus:ring-2 focus:ring-ethiopian-400 focus:border-ethiopian-500 transition-all duration-300 shadow-soft"
+                      />
+                      {recipe.ingredients.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeIngredient(idx)}
+                          disabled={isSubmitting}
+                          className="text-red-500 hover:text-red-700 transition-colors duration-200 p-3 rounded-xl hover:bg-red-50"
+                          aria-label={`Remove ingredient ${idx + 1}`}
+                        >
+                          <FaTimesCircle size={24} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <button
                   type="button"
-                  onClick={() => document.getElementById('imageUpload').click()}
+                  onClick={addIngredient}
                   disabled={isSubmitting}
-                  className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full font-semibold hover:bg-orange-200 transition-colors duration-200 flex items-center space-x-2"
+                  className="inline-flex items-center mt-6 px-6 py-3 bg-ethiopian-100 text-ethiopian-700 rounded-xl font-semibold hover:bg-ethiopian-200 hover:text-ethiopian-800 transition-all duration-300 shadow-soft hover:shadow-medium"
                 >
-                  <FaCloudUploadAlt className="text-xl" />
-                  <span>Browse</span>
+                  <FaPlus className="mr-2 text-lg" />
+                  Add Another Ingredient
                 </button>
               </div>
-              {file && <p className="text-sm text-gray-600 mt-2 ml-1">Selected: <span className="font-medium text-gray-700">{file.name}</span></p>}
-              {!file && <p className="text-sm text-gray-500 mt-2 ml-1">JPG, PNG, or GIF recommended.</p>}
-            </div>
-          </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white py-4 rounded-full font-bold text-xl shadow-lg hover:from-orange-700 hover:to-amber-700 transition-all duration-300 transform hover:scale-[1.005] flex items-center justify-center space-x-3"
-          >
-            {isSubmitting ? (
-              <>
-                <FaSpinner className="animate-spin text-2xl" /> <span>Creating Recipe...</span>
-              </>
-            ) : (
-              'Create Recipe'
-            )}
-          </button>
-        </form>
-      </div>
+              {/* Instructions */}
+              <div>
+                <label htmlFor="instruction" className="block text-earth-800 font-semibold mb-3 flex items-center">
+                  <FaBookOpen className="mr-3 text-ethiopian-500 text-xl" />
+                  Instructions
+                </label>
+                <textarea
+                  id="instruction"
+                  name="instruction"
+                  value={recipe.instruction}
+                  onChange={handleChange}
+                  rows={6}
+                  placeholder="Start by sautéing onions until caramelized. Add berbere and cook for a few minutes to release the flavors..."
+                  required
+                  disabled={isSubmitting}
+                  className="w-full border border-earth-200 rounded-xl px-5 py-4 text-lg text-earth-800 placeholder-earth-400 focus:ring-2 focus:ring-ethiopian-400 focus:border-ethiopian-500 transition-all duration-300 resize-y shadow-soft"
+                />
+              </div>
+
+              {/* Cooking Time & Image */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label htmlFor="cookingTime" className="block text-earth-800 font-semibold mb-3 flex items-center">
+                    <FaClock className="mr-3 text-ethiopian-500 text-xl" />
+                    Cooking Time (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    id="cookingTime"
+                    name="cookingTime"
+                    value={recipe.cookingTime}
+                    onChange={handleChange}
+                    min="1"
+                    required
+                    disabled={isSubmitting}
+                    placeholder="e.g., 60"
+                    className="w-full border border-earth-200 rounded-xl px-5 py-4 text-lg text-earth-800 placeholder-earth-400 focus:ring-2 focus:ring-ethiopian-400 focus:border-ethiopian-500 transition-all duration-300 shadow-soft"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="imageUpload" className="block text-earth-800 font-semibold mb-3 flex items-center">
+                    <FaImage className="mr-3 text-ethiopian-500 text-xl" />
+                    Recipe Image
+                  </label>
+                  <div className="relative border border-earth-200 rounded-xl p-4 flex items-center justify-between shadow-soft focus-within:ring-2 focus-within:ring-ethiopian-400 focus-within:border-ethiopian-500 transition-all duration-300">
+                    <input
+                      type="file"
+                      id="imageUpload"
+                      accept="image/*"
+                      onChange={e => setFile(e.target.files[0])}
+                      required
+                      disabled={isSubmitting}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <span className="text-earth-700 text-base flex-1 pr-2 truncate">
+                      {file ? file.name : 'Choose an image'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('imageUpload').click()}
+                      disabled={isSubmitting}
+                      className="bg-ethiopian-100 text-ethiopian-600 px-4 py-2 rounded-xl font-semibold hover:bg-ethiopian-200 transition-colors duration-200 flex items-center space-x-2"
+                    >
+                      <FaCloudUploadAlt className="text-xl" />
+                      <span>Browse</span>
+                    </button>
+                  </div>
+                  {file && (
+                    <p className="text-sm text-earth-600 mt-2">
+                      Selected: <span className="font-medium text-earth-700">{file.name}</span>
+                    </p>
+                  )}
+                  {!file && (
+                    <p className="text-sm text-earth-500 mt-2">JPG, PNG, or GIF recommended.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full btn-primary text-xl py-4 flex items-center justify-center space-x-3"
+              >
+                {isSubmitting ? (
+                  <>
+                    <FaSpinner className="animate-spin text-2xl" />
+                    <span>Creating Recipe...</span>
+                  </>
+                ) : (
+                  <>
+                    <GiCookingPot className="text-2xl" />
+                    <span>Create Recipe</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+      
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );

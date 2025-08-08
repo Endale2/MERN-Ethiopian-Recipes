@@ -1,18 +1,106 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
 /* Other global styles and Tailwind base imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Add custom utility for hover underline if not already defined globally */
-/* You might not need this if it's already in your main stylesheet or not intended for SavedRecipes */
-/*
-@keyframes hover-underline {
-  from { width: 0; }
-  to { width: 100%; }
+/* Custom base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: theme('colors.earth.800');
+    background-color: theme('colors.ethiopian.50');
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: theme('colors.ethiopian.100');
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.ethiopian.400');
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.ethiopian.500');
+  }
+
+  /* Selection styles */
+  ::selection {
+    background-color: theme('colors.ethiopian.200');
+    color: theme('colors.earth.900');
+  }
 }
-.animate-hover-underline {
-  animation: hover-underline 0.3s ease-out forwards;
+
+/* Custom component styles */
+@layer components {
+  .btn-primary {
+    @apply bg-ethiopian-500 hover:bg-ethiopian-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-medium focus:outline-none focus:ring-2 focus:ring-ethiopian-400 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-ethiopian-50 text-ethiopian-600 font-semibold py-3 px-6 rounded-xl border-2 border-ethiopian-200 transition-all duration-300 transform hover:scale-105 hover:shadow-soft focus:outline-none focus:ring-2 focus:ring-ethiopian-400 focus:ring-offset-2;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:scale-105 border border-ethiopian-100;
+  }
+
+  .card-hover {
+    @apply hover:shadow-strong hover:scale-105 transition-all duration-300;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-ethiopian-600 to-spice-600 bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/80 border border-white/20 shadow-soft;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, theme('colors.ethiopian.500') 0%, theme('colors.spice.500') 100%);
+  }
+
+  .section-padding {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-max {
+    @apply max-w-7xl mx-auto;
+  }
 }
-*/
+
+/* Custom utilities */
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
