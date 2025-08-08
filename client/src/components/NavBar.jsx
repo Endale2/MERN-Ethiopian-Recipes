@@ -47,7 +47,7 @@ export default function NavBar() {
   }, [menuOpen]);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -58,8 +58,8 @@ export default function NavBar() {
   };
 
   return (
-    <header className={`sticky top-0 z-50 bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 transition-shadow ${scrolled ? 'shadow-lg' : 'shadow'} py-4`}>      
-      <div className="container mx-auto px-6 flex items-center justify-between">
+    <header className={`sticky top-0 z-50 transition-all ${scrolled ? 'shadow-lg' : 'shadow'} backdrop-blur bg-white/70 supports-[backdrop-filter]:bg-white/60 border-b border-orange-100`}>      
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <FaUtensils size={28} className="text-orange-500" />
@@ -67,18 +67,18 @@ export default function NavBar() {
         </Link>
 
         {/* Desktop Links */}
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex items-center space-x-2">
           {links.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+              className={`group flex items-center space-x-2 px-3 py-2 rounded-lg transition ${
                 location.pathname === to
-                  ? 'bg-orange-200 text-orange-700'
-                  : 'text-gray-700 hover:bg-yellow-200 hover:text-orange-600'
-              } transition`}
+                  ? 'bg-orange-100 text-orange-700'
+                  : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+              }`}
             >
-              <Icon />
+              <Icon className="transition-transform group-hover:-translate-y-0.5" />
               <span>{label}</span>
             </Link>
           ))}
@@ -95,40 +95,40 @@ export default function NavBar() {
               <img
                 src={user.photoURL || ''}
                 alt="avatar"
-                className="w-10 h-10 rounded-full border-2 border-orange-400 cursor-pointer"
+                className="w-10 h-10 rounded-full ring-2 ring-orange-300 cursor-pointer"
                 onClick={() => setDropdownOpen(o => !o)}
               />
-              <div className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg transform transition ${dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`} ref={menuRef}>
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-                <button onClick={logout} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Logout</button>
+              <div className={`absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-orange-100 transform origin-top-right transition ${dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`} ref={menuRef}>
+                <Link to="/profile" className="block px-4 py-2 hover:bg-orange-50">Profile</Link>
+                <button onClick={logout} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Logout</button>
               </div>
             </div>
           ) : (
             <button
               onClick={handleLoginClick}
-              className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
+              className="flex items-center space-x-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-amber-700 transition shadow"
             >
               <AiOutlineGoogle />
               <span>Sign in</span>
             </button>
           )}
 
-          <button className="md:hidden" onClick={() => setMenuOpen(o => !o)}>
-            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          <button className="md:hidden" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+            {menuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t">
-          <nav className="flex flex-col p-4 space-y-2" ref={menuRef}>
+        <div className="md:hidden bg-white/90 backdrop-blur border-t" ref={menuRef}>
+          <nav className="flex flex-col p-4 space-y-2">
             {links.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-yellow-100"
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-orange-50"
               >
                 <Icon />
                 <span>{label}</span>
@@ -137,7 +137,7 @@ export default function NavBar() {
             {!user && (
               <button
                 onClick={handleLoginClick}
-                className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition mt-2"
+                className="flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-amber-700 transition mt-2 shadow"
               >
                 <AiOutlineGoogle />
                 <span>Sign in</span>
@@ -146,4 +146,6 @@ export default function NavBar() {
           </nav>
         </div>
       )}
-    </header>  );}
+    </header>
+  );
+}

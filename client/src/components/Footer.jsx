@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 border-t border-orange-200 py-12">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-700">
+    <footer className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 border-t border-orange-200 py-12 mt-16">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-700">
         {/* Branding */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-orange-600">Ethiopian Cuisine</h2>
