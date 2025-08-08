@@ -1,18 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 
-/* Other global styles and Tailwind base imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Add custom utility for hover underline if not already defined globally */
-/* You might not need this if it's already in your main stylesheet or not intended for SavedRecipes */
-/*
-@keyframes hover-underline {
-  from { width: 0; }
-  to { width: 100%; }
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans bg-gradient-to-b from-yellow-50 to-orange-50 text-gray-800 antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-display tracking-tight;
+  }
 }
-.animate-hover-underline {
-  animation: hover-underline 0.3s ease-out forwards;
-}
-*/
+
+/* Animation delay helpers used by components */
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* Selection color */
+::selection { background: rgba(251, 146, 60, 0.2); }

@@ -69,11 +69,11 @@ export default function SavedRecipes() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-b from-yellow-50 to-orange-50 p-8">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
         <p className="text-2xl text-gray-700 mb-6">You need to sign in to see saved recipes.</p>
         <button
           onClick={login}
-          className="inline-flex items-center bg-orange-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-700 transition"
+          className="inline-flex items-center bg-gradient-to-r from-orange-600 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:from-orange-700 hover:to-amber-700 transition shadow"
         >
           <FaSpinner className="animate-spin mr-2" /> Sign in with Google
         </button>
@@ -84,7 +84,7 @@ export default function SavedRecipes() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-b from-yellow-50 to-orange-50 p-8">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
         <FaSpinner className="animate-spin text-4xl text-orange-500 mb-4" />
         <p className="text-xl text-orange-700">Loading your favorites…</p>
       </div>
@@ -92,68 +92,70 @@ export default function SavedRecipes() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-center text-orange-800 mb-12">
-        Your Favorite Ethiopian Flavors
-      </h1>
+    <div className="py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-orange-800 mb-12">
+          Your Favorite Ethiopian Flavors
+        </h1>
 
-      {saved.length === 0 ? (
-        <div className="text-center py-10 max-w-lg mx-auto">
-          <p className="text-2xl text-gray-700 mb-4">No saved recipes yet!</p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-orange-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-700 transition"
-          >
-            Browse Recipes
-          </button>
-        </div>
-      ) : (
-        <ul className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto">
-          {saved.map((r) => (
-            <li
-              key={r._id}
-              onClick={() => navigate(`/recipes/${r._id}`)}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition hover:scale-105 cursor-pointer"
+        {saved.length === 0 ? (
+          <div className="text-center py-10 max-w-lg mx-auto">
+            <p className="text-2xl text-gray-700 mb-4">No saved recipes yet!</p>
+            <button
+              onClick={() => navigate('/')}
+              className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:from-orange-700 hover:to-amber-700 transition shadow"
             >
-              <div className="h-44 overflow-hidden relative group">
-                <img
-                  src={r.imageURL}
-                  alt={r.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity"></div>
-              </div>
-              <div className="p-4 flex flex-col justify-between h-[200px]">
-                <div>
-                  <h2 className="text-xl font-semibold text-orange-700 mb-1 truncate">{r.name}</h2>
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                    {r.description || 'No description available.'}
-                  </p>
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <FaClock className="mr-1 text-orange-500" /> {r.cookingTime} mins
-                  </div>
-                </div>
-                <button
-                  onClick={e => removeRecipe(r._id, e)}
-                  className="mt-4 flex items-center justify-center bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
-                >
-                  <FaTrash className="mr-2" /> Remove
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm animate-fade-in">
-            {modalContent}
+              Browse Recipes
+            </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <ul className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {saved.map((r) => (
+              <li
+                key={r._id}
+                onClick={() => navigate(`/recipes/${r._id}`)}
+                className="group bg-white rounded-xl shadow-lg overflow-hidden transform transition hover:scale-105 cursor-pointer"
+              >
+                <div className="h-44 overflow-hidden relative">
+                  <img
+                    src={r.imageURL}
+                    alt={r.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity"></div>
+                </div>
+                <div className="p-4 flex flex-col justify-between h-[200px]">
+                  <div>
+                    <h2 className="text-xl font-semibold text-orange-700 mb-1 truncate">{r.name}</h2>
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                      {r.description || 'No description available.'}
+                    </p>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <FaClock className="mr-1 text-orange-500" /> {r.cookingTime} mins
+                    </div>
+                  </div>
+                  <button
+                    onClick={e => removeRecipe(r._id, e)}
+                    className="mt-4 flex items-center justify-center bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+                  >
+                    <FaTrash className="mr-2" /> Remove
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
 
-      <ToastContainer position="bottom-right" autoClose={3000} />
+        {showModal && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm animate-fade-in">
+              {modalContent}
+            </div>
+          </div>
+        )}
+
+        <ToastContainer position="bottom-right" autoClose={3000} />
+      </div>
     </div>
   );
 }
